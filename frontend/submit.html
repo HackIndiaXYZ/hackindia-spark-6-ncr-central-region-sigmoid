@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgentForge — Submit Agent</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+  <style>
+    .submit-layout { max-width: 860px; margin: 0 auto; padding: 48px 28px 80px; }
+    .schema-block { background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:12px;color:var(--text3);white-space:pre;overflow-x:auto;line-height:1.7; }
+    .tag-row { display:flex;flex-wrap:wrap;gap:6px;margin-top:8px; }
+    .tag-pill { font-family:var(--mono);font-size:11px;padding:3px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text2);cursor:pointer;transition:all 0.15s; }
+    .tag-pill:hover { border-color:var(--green3);color:var(--green); }
+    .tag-pill.selected { background:rgba(0,255,136,0.08);border-color:var(--green3);color:var(--green); }
+    .code-editor { width:100%;min-height:280px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:13px;color:var(--text);resize:vertical;outline:none;line-height:1.7;tab-size:4;transition:border-color 0.2s,box-shadow 0.2s; }
+    .code-editor:focus { border-color:var(--green3);box-shadow:var(--glow); }
+    .method-tabs { display:flex;gap:4px;margin-bottom:20px; }
+    .method-tab { font-family:var(--mono);font-size:12px;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s; }
+    .method-tab.active { color:var(--green);border-color:var(--green3);background:rgba(0,255,136,0.05); }
+    .method-panel { display:none; }
+    .method-panel.active { display:block; }
+    .val-box { border-radius:var(--radius);padding:12px 16px;font-family:var(--mono);font-size:12px;margin-top:12px;display:none;white-space:pre-wrap;line-height:1.6; }
+    .val-box.success { background:rgba(0,255,136,0.05);border:1px solid var(--green3);color:var(--green); }
+    .val-box.error   { background:rgba(255,68,85,0.05);border:1px solid var(--red);color:var(--red); }
+    .val-box.info    { background:rgba(255,170,0,0.05);border:1px solid #aa6600;color:var(--amber); }
+    .success-state { display:none;text-align:center;padding:48px 20px; }
+    .success-icon { font-family:var(--mono);font-size:48px;color:var(--green);margin-bottom:16px; }
+    .success-title { font-family:var(--mono);font-size:18px;color:var(--text);margin-bottom:8px; }
+    .success-sub { font-size:14px;color:var(--text2);margin-bottom:24px; }
+  </style>
+</head>
+<body>
+<nav class="topbar">
+  <a class="logo" href="/"><span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span></a>
+  <div class="nav">
+    <a href="/">Marketplace</a>
+    <a href="/builder">Pipeline Builder</a>
+    <a href="/submit" class="active">Submit Agent</a>
+  </div>
+  <div class="status-dot"></div>
+</nav>
+
+<div class="submit-layout">
+  <div style="margin-bottom:40px;">
+    <div class="hero-tag">Developer Portal</div>
+    <h1 style="font-family:var(--mono);font-size:32px;font-weight:700;line-height:1.1;margin-bottom:12px;">Publish an <span style="color:var(--green);">Agent</span></h1>
+    <p style="color:var(--text2);font-size:15px;line-height:1.7;">Code is sandbox-validated before publishing — only agents that actually run get listed.</p>
+  </div>
+
+  <div id="form-view">
+    <div class="method-tabs">
+      <button class="method-tab active" onclick="switchTab('editor')">✎ Write Code</button>
+      <button class="method-tab" onclick="switchTab('github')">⬡ Import from GitHub</button>
+    </div>
+
+    <div class="method-panel active" id="tab-editor">
+      <div class="section-title" style="margin-bottom:12px;">Agent Code</div>
+      <p style="color:var(--text2);font-size:13px;line-height:1.7;margin-bottom:12px;">
+        Must read from <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">stdin</code> and write to
+        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">stdout</code>.
+        Runs in a sandbox — only saved if execution succeeds.
+      </p>
+      <textarea class="code-editor" id="agent-code" spellcheck="false">#!/usr/bin/env python3
+import sys
+
+def main():
+    input_text = sys.stdin.read().strip()
+    if not input_text:
+        print("No input provided.")
+        return
+
+    # Your agent logic here
+    words = input_text.split()
+    print(f"Word count: {len(words)}")
+    print(f"Characters: {len(input_text)}")
+
+if __name__ == "__main__":
+    main()</textarea>
+      <div style="display:flex;gap:10px;margin-top:12px;align-items:center;">
+        <button class="btn btn-secondary" onclick="validateCode()" id="validate-btn">▶ Test Run</button>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text3);">runs with sample input before saving</span>
+      </div>
+      <div class="val-box" id="val-result"></div>
+    </div>
+
+    <div class="method-panel" id="tab-github">
+      <div class="section-title" style="margin-bottom:12px;">Import from GitHub</div>
+      <p style="color:var(--text2);font-size:13px;line-height:1.7;margin-bottom:12px;">
+        Paste a raw GitHub URL to an <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">agent.py</code>. We fetch it, sandbox-test it, then register it.
+      </p>
+      <div style="display:flex;gap:10px;">
+        <input class="form-input" id="github-url" placeholder="https://raw.githubusercontent.com/user/repo/main/agent.py" style="flex:1;"/>
+        <button class="btn btn-secondary" onclick="fetchFromGithub()" id="github-btn">Fetch</button>
+      </div>
+      <div class="val-box" id="github-result"></div>
+    </div>
+
+    <hr class="divider"/>
+    <div class="section-title" style="margin-bottom:20px;">Manifest</div>
+
+    <div class="form-group">
+      <label class="form-label">Agent Name *</label>
+      <input class="form-input" id="f-name" placeholder="e.g. Keyword Extractor"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Agent ID (auto-generated if empty)</label>
+      <input class="form-input" id="f-id" placeholder="e.g. keyword-extractor-v1"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;">Lowercase + hyphens only. Must be unique.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description *</label>
+      <textarea class="form-textarea" id="f-desc" style="height:72px;" placeholder="What does this agent do?"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="form-group"><label class="form-label">Author</label><input class="form-input" id="f-author" placeholder="your name"/></div>
+      <div class="form-group"><label class="form-label">Version</label><input class="form-input" id="f-version" value="1.0"/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="form-group">
+        <label class="form-label">Input Type</label>
+        <select class="form-select" id="f-input-type">
+          <option value="text">text</option><option value="url">url</option>
+          <option value="code">code</option><option value="json">json</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Output Type</label>
+        <select class="form-select" id="f-output-type">
+          <option value="text">text</option><option value="json">json</option><option value="markdown">markdown</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags</label>
+      <div class="tag-row">
+        <span class="tag-pill" onclick="toggleTag(this)">NLP</span>
+        <span class="tag-pill" onclick="toggleTag(this)">text</span>
+        <span class="tag-pill" onclick="toggleTag(this)">code</span>
+        <span class="tag-pill" onclick="toggleTag(this)">web</span>
+        <span class="tag-pill" onclick="toggleTag(this)">data</span>
+        <span class="tag-pill" onclick="toggleTag(this)">email</span>
+        <span class="tag-pill" onclick="toggleTag(this)">summarization</span>
+        <span class="tag-pill" onclick="toggleTag(this)">classification</span>
+        <span class="tag-pill" onclick="toggleTag(this)">extraction</span>
+        <span class="tag-pill" onclick="toggleTag(this)">generation</span>
+        <span class="tag-pill" onclick="toggleTag(this)">analysis</span>
+      </div>
+      <input class="form-input" id="f-tags-custom" placeholder="custom tags, comma separated" style="margin-top:10px;"/>
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <div class="section-title" style="margin-bottom:12px;">Manifest Preview</div>
+      <div class="schema-block" id="manifest-preview">{}</div>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="btn btn-primary" onclick="submitAgent()" id="submit-btn">↑ Publish Agent</button>
+      <div id="submit-status" style="font-family:var(--mono);font-size:12px;color:var(--text3);"></div>
+    </div>
+  </div>
+
+  <div class="success-state" id="success-view">
+    <div class="success-icon">[✓]</div>
+    <div class="success-title">Agent Published</div>
+    <div class="success-sub" id="success-msg">Your agent is now live.</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:24px;text-align:left;">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:8px;">SANDBOX OUTPUT</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--green);white-space:pre-wrap;" id="success-output"></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <a href="/" class="btn btn-primary">Browse Marketplace</a>
+      <a href="/builder" class="btn btn-secondary">Open Builder</a>
+      <button class="btn btn-ghost" onclick="resetForm()">Submit Another</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+<script>
+let selectedTags = new Set();
+let codeValidated = false;
+let validatedOutput = '';
+
+function switchTab(tab) {
+  document.querySelectorAll('.method-tab').forEach((el,i) => el.classList.toggle('active',(i===0&&tab==='editor')||(i===1&&tab==='github')));
+  document.getElementById('tab-editor').classList.toggle('active', tab==='editor');
+  document.getElementById('tab-github').classList.toggle('active', tab==='github');
+}
+
+async function validateCode() {
+  const code = document.getElementById('agent-code').value.trim();
+  if (!code) { toast('Write some code first','error'); return; }
+  const btn = document.getElementById('validate-btn');
+  const box = document.getElementById('val-result');
+  btn.disabled = true; btn.textContent = '● Running...';
+  box.style.display = 'block'; box.className = 'val-box info'; box.textContent = 'sandboxing agent...';
+  codeValidated = false;
+  try {
+    const r = await fetch('/api/agents/validate-code', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ code, test_input: 'Hello world. The quick brown fox jumps over the lazy dog. This is a test input for agent sandbox validation.' })
+    });
+    const d = await r.json();
+    if (d.success) {
+      box.className = 'val-box success';
+      box.textContent = `✓ Agent ran successfully (${d.latency_ms}ms)\n\nOutput:\n${d.output.slice(0,400)}`;
+      codeValidated = true; validatedOutput = d.output;
+      toast('Code validated ✓','success');
+    } else {
+      box.className = 'val-box error';
+      box.textContent = `✗ Agent failed\n\n${d.error}`;
+      toast('Validation failed','error');
+    }
+  } catch(e) { box.className='val-box error'; box.textContent=`✗ ${e.message}`; }
+  finally { btn.disabled=false; btn.textContent='▶ Test Run'; }
+}
+
+async function fetchFromGithub() {
+  const url = document.getElementById('github-url').value.trim();
+  if (!url) { toast('Enter a GitHub raw URL','error'); return; }
+  if (!url.includes('raw.githubusercontent.com')) { toast('Must be a raw.githubusercontent.com URL','error'); return; }
+  const btn = document.getElementById('github-btn');
+  const box = document.getElementById('github-result');
+  btn.disabled=true; btn.textContent='Fetching...';
+  box.style.display='block'; box.className='val-box info'; box.textContent='fetching from GitHub...';
+  try {
+    const r = await fetch('/api/agents/fetch-github', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ url })
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('agent-code').value = d.code;
+      switchTab('editor');
+      box.className='val-box success';
+      box.textContent=`✓ Fetched ${d.lines} lines. Switched to editor — click Test Run to validate.`;
+      toast('Imported from GitHub ✓','success');
+    } else { box.className='val-box error'; box.textContent=`✗ ${d.error}`; }
+  } catch(e) { box.className='val-box error'; box.textContent=`✗ ${e.message}`; }
+  finally { btn.disabled=false; btn.textContent='Fetch'; }
+}
+
+function toggleTag(el) {
+  const tag = el.textContent;
+  if (selectedTags.has(tag)) { selectedTags.delete(tag); el.classList.remove('selected'); }
+  else { selectedTags.add(tag); el.classList.add('selected'); }
+  updatePreview();
+}
+
+function getManifest() {
+  const name = document.getElementById('f-name').value.trim();
+  const id = document.getElementById('f-id').value.trim() ||
+    (name ? name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') + '-v1' : '');
+  const customTags = document.getElementById('f-tags-custom').value.split(',').map(t=>t.trim()).filter(Boolean);
+  return {
+    id: id||undefined, name: name||'Unnamed Agent',
+    description: document.getElementById('f-desc').value.trim(),
+    author: document.getElementById('f-author').value.trim()||'anonymous',
+    version: document.getElementById('f-version').value.trim()||'1.0',
+    tags: [...selectedTags,...customTags],
+    input: {type: document.getElementById('f-input-type').value},
+    output: {type: document.getElementById('f-output-type').value},
+    entry: 'agent.py'
+  };
+}
+
+function updatePreview() {
+  document.getElementById('manifest-preview').textContent = JSON.stringify(getManifest(),null,2);
+}
+['f-name','f-id','f-desc','f-author','f-version','f-tags-custom'].forEach(id=>document.getElementById(id).addEventListener('input',updatePreview));
+document.getElementById('f-input-type').addEventListener('change',updatePreview);
+document.getElementById('f-output-type').addEventListener('change',updatePreview);
+
+async function submitAgent() {
+  const manifest = getManifest();
+  if (!manifest.name||manifest.name==='Unnamed Agent') { toast('Agent name required','error'); return; }
+  if (!manifest.description) { toast('Description required','error'); return; }
+  const code = document.getElementById('agent-code').value.trim();
+  if (!code) { toast('Write agent code first','error'); return; }
+  if (!codeValidated) { toast('Click Test Run first — code must pass sandbox before publishing','error'); return; }
+
+  const btn=document.getElementById('submit-btn'), status=document.getElementById('submit-status');
+  btn.disabled=true; btn.textContent='● Publishing...'; status.textContent='saving...';
+  try {
+    const r = await fetch('/api/agents/submit-with-code', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({manifest, code})
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('form-view').style.display='none';
+      document.getElementById('success-view').style.display='block';
+      document.getElementById('success-msg').textContent=`"${manifest.name}" is live. ID: ${d.agent?.id}`;
+      document.getElementById('success-output').textContent=validatedOutput.slice(0,400);
+    } else { toast(d.detail||'Submission failed','error'); }
+  } catch(e) { toast(`Error: ${e.message}`,'error'); }
+  finally { btn.disabled=false; btn.textContent='↑ Publish Agent'; status.textContent=''; }
+}
+
+function resetForm() {
+  document.getElementById('form-view').style.display='block';
+  document.getElementById('success-view').style.display='none';
+  ['f-name','f-id','f-desc','f-author','f-tags-custom'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-version').value='1.0';
+  document.getElementById('val-result').style.display='none';
+  selectedTags.clear();
+  document.querySelectorAll('.tag-pill.selected').forEach(el=>el.classList.remove('selected'));
+  codeValidated=false; updatePreview();
+}
+
+function toast(msg,type='') {
+  const el=document.createElement('div'); el.className=`toast ${type}`; el.textContent=msg;
+  document.getElementById('toasts').appendChild(el); setTimeout(()=>el.remove(),3000);
+}
+updatePreview();
+</script>
+</body>
+</html>

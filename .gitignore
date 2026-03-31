@@ -1,0 +1,34 @@
+# Environment
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual env
+venv/
+.venv/
+env/
+
+# Data / DB (don't push the live DB)
+data/agentforge.db
+data/chroma/
+
+# Manifests (auto-generated on startup)
+manifests/
+
+# Temp files
+*.tmp
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

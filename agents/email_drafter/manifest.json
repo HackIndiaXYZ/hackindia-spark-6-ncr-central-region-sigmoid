@@ -1,0 +1,11 @@
+{
+  "id": "email-drafter-v1",
+  "name": "Email Drafter",
+  "description": "Takes any text or summary and drafts a professional email around it with subject and body.",
+  "author": "AgentForge",
+  "version": "1.0",
+  "tags": ["email", "writing", "professional", "communication"],
+  "input": {"type": "text", "max_length": 5000},
+  "output": {"type": "text"},
+  "entry": "agent.py"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "summarizer-v1",
+  "name": "Text Summarizer",
+  "description": "Summarizes long text into concise bullet-point highlights using LLM reasoning.",
+  "author": "AgentForge",
+  "version": "1.0",
+  "tags": ["NLP", "text", "summarization", "highlights"],
+  "input": {"type": "text", "max_length": 10000},
+  "output": {"type": "text"},
+  "entry": "agent.py"
+}

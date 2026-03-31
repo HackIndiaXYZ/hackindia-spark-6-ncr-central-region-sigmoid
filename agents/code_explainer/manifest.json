@@ -1,0 +1,11 @@
+{
+  "id": "code-explainer-v1",
+  "name": "Code Explainer",
+  "description": "Takes any code snippet and explains what it does in plain English, line by line.",
+  "author": "AgentForge",
+  "version": "1.0",
+  "tags": ["code", "explanation", "developer", "education"],
+  "input": {"type": "text", "max_length": 5000},
+  "output": {"type": "text"},
+  "entry": "agent.py"
+}

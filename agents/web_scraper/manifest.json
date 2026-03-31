@@ -1,0 +1,11 @@
+{
+  "id": "web-scraper-v1",
+  "name": "Web Scraper",
+  "description": "Fetches a URL and extracts the main text content, stripping HTML and boilerplate.",
+  "author": "AgentForge",
+  "version": "1.0",
+  "tags": ["web", "scraping", "extraction", "data"],
+  "input": {"type": "url"},
+  "output": {"type": "text"},
+  "entry": "agent.py"
+}

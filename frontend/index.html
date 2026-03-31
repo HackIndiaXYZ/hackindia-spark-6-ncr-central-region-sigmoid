@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgentForge — AI Agent Marketplace</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<nav class="topbar">
+  <a class="logo" href="/">
+    <span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span>
+  </a>
+  <div class="nav">
+    <a href="/" class="active">Marketplace</a>
+    <a href="/builder">Pipeline Builder</a>
+    <a href="/submit">Submit Agent</a>
+  </div>
+  <div class="status-dot" title="API online"></div>
+</nav>
+
+<div class="container page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag">AI Agents Marketplace</div>
+    <h1>Discover. <span>Chain.</span> Deploy.</h1>
+    <p>Browse verified AI agents, compose them into live pipelines, and deploy — without writing glue code.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-val" id="stat-agents">—</div>
+        <div class="stat-label">Agents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-runs">—</div>
+        <div class="stat-label">Total Runs</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-top">—</div>
+        <div class="stat-label">Top Trust Score</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <input type="text" id="search-input" placeholder="Search agents by capability... e.g. 'summarize text', 'scrape web'" autocomplete="off"/>
+    <span class="search-icon">⌕</span>
+  </div>
+
+  <!-- Grid -->
+  <div class="section-head">
+    <div class="section-title">Available Agents</div>
+    <a href="/builder" class="btn btn-primary" style="font-size:12px;padding:8px 16px;">
+      Open Pipeline Builder →
+    </a>
+  </div>
+
+  <div class="agents-grid" id="agents-grid">
+    <!-- Shimmer placeholders -->
+    <div class="loading-shimmer" style="height:200px;"></div>
+    <div class="loading-shimmer" style="height:200px;"></div>
+    <div class="loading-shimmer" style="height:200px;"></div>
+    <div class="loading-shimmer" style="height:200px;"></div>
+  </div>
+
+</div>
+
+<!-- Agent detail modal -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;">
+  <div id="modal" style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;width:min(640px,95vw);max-height:90vh;overflow-y:auto;">
+    <div style="padding:28px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+        <div>
+          <div class="card-name" id="modal-name" style="font-size:18px;"></div>
+          <div class="card-version" id="modal-author" style="margin-top:4px;"></div>
+        </div>
+        <button onclick="closeModal()" class="btn btn-ghost" style="font-size:18px;padding:4px 12px;">×</button>
+      </div>
+      <p id="modal-desc" style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:20px;"></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Trust Score</div>
+          <div style="font-family:var(--mono);font-size:20px;color:var(--green);" id="modal-trust">—</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Total Runs</div>
+          <div style="font-family:var(--mono);font-size:20px;color:var(--text);" id="modal-runs">—</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Avg Latency</div>
+          <div style="font-family:var(--mono);font-size:20px;color:var(--text);" id="modal-latency">—</div>
+        </div>
+      </div>
+      <div id="modal-tags" class="card-tags" style="margin-bottom:20px;"></div>
+      <!-- Quick test -->
+      <div style="border-top:1px solid var(--border);padding-top:20px;">
+        <div class="form-label">Quick Test</div>
+        <textarea class="form-textarea" id="modal-test-input" placeholder="Enter input to test this agent..." style="margin-bottom:12px;height:80px;"></textarea>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="testAgent()" id="modal-run-btn">▶ Run Agent</button>
+          <button class="btn btn-secondary" onclick="addToBuilder()" id="modal-add-btn">+ Add to Pipeline</button>
+        </div>
+        <div class="terminal" style="margin-top:16px;display:none;" id="modal-terminal">
+          <div class="terminal-header">
+            <div class="t-dot red"></div><div class="t-dot amber"></div><div class="t-dot green"></div>
+            <span class="terminal-title" id="modal-terminal-title">output</span>
+          </div>
+          <div class="terminal-body" id="modal-output"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+const API = '';
+let allAgents = [];
+let currentAgent = null;
+let searchTimeout = null;
+
+async function loadStats() {
+  try {
+    const r = await fetch(`${API}/api/stats`);
+    const d = await r.json();
+    document.getElementById('stat-agents').textContent = d.total_agents;
+    document.getElementById('stat-runs').textContent = d.total_runs;
+    const top = d.top_agents?.[0];
+    document.getElementById('stat-top').textContent = top ? (top.trust_score * 100).toFixed(0) + '%' : '—';
+  } catch(e) {}
+}
+
+async function loadAgents(query = '') {
+  const grid = document.getElementById('agents-grid');
+  try {
+    const url = query ? `${API}/api/search?q=${encodeURIComponent(query)}` : `${API}/api/agents`;
+    const r = await fetch(url);
+    const d = await r.json();
+    allAgents = d.agents || [];
+    renderAgents(allAgents);
+  } catch(e) {
+    grid.innerHTML = '<div class="empty-state">Failed to load agents. Is the server running?</div>';
+  }
+}
+
+function renderAgents(agents) {
+  const grid = document.getElementById('agents-grid');
+  if (!agents.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">//  no agents found</div>';
+    return;
+  }
+  grid.innerHTML = agents.map(a => {
+    const trust = typeof a.trust_score === 'number' ? a.trust_score : 0.5;
+    const trustPct = (trust * 100).toFixed(0);
+    const tags = Array.isArray(a.tags) ? a.tags : [];
+    const isLow = trust < 0.4;
+    return `
+      <div class="agent-card" onclick="openModal('${a.id}')">
+        <div class="card-header">
+          <div>
+            <div class="card-name">${a.name}</div>
+            <div class="card-version">v${a.version || '1.0'} · by ${a.author || 'unknown'}</div>
+          </div>
+          <div class="trust-badge ${isLow ? 'low' : ''}">⬡ ${trustPct}%</div>
+        </div>
+        <div class="card-desc">${a.description}</div>
+        <div class="card-tags">
+          ${tags.slice(0,4).map(t => `<span class="tag">${t}</span>`).join('')}
+        </div>
+        <div class="card-footer">
+          <div class="card-meta">
+            <span>${a.total_runs || 0}</span> runs ·
+            <span>${a.input_type || 'text'}</span> → <span>${a.output_type || 'text'}</span>
+          </div>
+          <button class="btn-add" onclick="event.stopPropagation();addToPipelineById('${a.id}','${a.name}')">+ Pipeline</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openModal(id) {
+  const a = allAgents.find(x => x.id === id);
+  if (!a) return;
+  currentAgent = a;
+  const trust = (a.trust_score || 0.5) * 100;
+  document.getElementById('modal-name').textContent = a.name;
+  document.getElementById('modal-author').textContent = `v${a.version || '1.0'} · by ${a.author || 'unknown'}`;
+  document.getElementById('modal-desc').textContent = a.description;
+  document.getElementById('modal-trust').textContent = trust.toFixed(0) + '%';
+  document.getElementById('modal-runs').textContent = a.total_runs || 0;
+  document.getElementById('modal-latency').textContent = a.avg_latency_ms ? Math.round(a.avg_latency_ms) + 'ms' : '—';
+  const tags = Array.isArray(a.tags) ? a.tags : [];
+  document.getElementById('modal-tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+  document.getElementById('modal-test-input').value = '';
+  document.getElementById('modal-output').textContent = '';
+  document.getElementById('modal-terminal').style.display = 'none';
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  currentAgent = null;
+}
+
+async function testAgent() {
+  if (!currentAgent) return;
+  const input = document.getElementById('modal-test-input').value.trim();
+  if (!input) { toast('Enter some input first', 'error'); return; }
+
+  const terminal = document.getElementById('modal-terminal');
+  const output = document.getElementById('modal-output');
+  const btn = document.getElementById('modal-run-btn');
+  const titleEl = document.getElementById('modal-terminal-title');
+
+  terminal.style.display = 'block';
+  output.textContent = '';
+  output.innerHTML = '<span class="t-prompt">$ </span><span class="t-meta">running ' + currentAgent.name + '...</span>\n\n';
+  titleEl.textContent = currentAgent.id;
+  btn.disabled = true;
+  btn.textContent = '● Running';
+
+  try {
+    const resp = await fetch(`${API}/api/agent/run`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ agent_ids: [currentAgent.id], input_text: input })
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const ev = JSON.parse(line.slice(6));
+          if (ev.type === 'token') {
+            const span = document.createElement('span');
+            span.textContent = ev.content;
+            output.appendChild(span);
+            output.scrollTop = output.scrollHeight;
+          } else if (ev.type === 'done') {
+            output.textContent += '\n\n';
+          }
+        } catch(e) {}
+      }
+    }
+    // Update stats display
+    loadStats();
+    loadAgents(document.getElementById('search-input').value);
+  } catch(err) {
+    output.textContent += `\n[FETCH ERROR] ${err.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '▶ Run Agent';
+  }
+}
+
+function addToBuilder() {
+  if (!currentAgent) return;
+  addToPipelineById(currentAgent.id, currentAgent.name);
+  closeModal();
+}
+
+function addToPipelineById(id, name) {
+  let pipeline = JSON.parse(sessionStorage.getItem('pipeline') || '[]');
+  if (pipeline.find(a => a.id === id)) {
+    toast(`${name} already in pipeline`, 'error');
+    return;
+  }
+  pipeline.push({ id, name });
+  sessionStorage.setItem('pipeline', JSON.stringify(pipeline));
+  toast(`${name} added to pipeline ✓`, 'success');
+}
+
+function toast(msg, type = '') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// Search with debounce
+document.getElementById('search-input').addEventListener('input', e => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => loadAgents(e.target.value.trim()), 300);
+});
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// Init
+loadStats();
+loadAgents();
+</script>
+</body>
+</html>

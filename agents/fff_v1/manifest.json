@@ -1,0 +1,15 @@
+{
+  "id": "fff-v1",
+  "name": "fff",
+  "description": "ff",
+  "author": "Rak",
+  "version": "1.0",
+  "tags": [],
+  "input": {
+    "type": "text"
+  },
+  "output": {
+    "type": "text"
+  },
+  "entry": "agent.py"
+}
