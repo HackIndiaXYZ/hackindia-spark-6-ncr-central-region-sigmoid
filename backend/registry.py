@@ -43,7 +43,7 @@ def register_agent(manifest: dict) -> dict:
         manifest.get("output", {}).get("type", "text"),
         manifest.get("entry", "agent.py"),
         manifest_path,
-        0.5
+        0.7
     ))
     conn.commit()
     conn.close()

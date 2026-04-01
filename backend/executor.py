@@ -11,6 +11,7 @@ from .trust import log_execution
 
 AGENTS_DIR = os.path.join(os.path.dirname(__file__), "..", "agents")
 
+
 AGENT_MODULE_MAP = {
     "summarizer-v1":     "summarizer",
     "code-explainer-v1": "code_explainer",
@@ -19,19 +20,35 @@ AGENT_MODULE_MAP = {
 }
 
 def _get_script(agent_id: str):
+    """Resolve agent script path. Checks map first, then falls back to folder scan."""
     folder = AGENT_MODULE_MAP.get(agent_id)
-    if not folder:
-        return None
-    return os.path.abspath(os.path.join(AGENTS_DIR, folder, "agent.py"))
+    if folder:
+        path = os.path.abspath(os.path.join(AGENTS_DIR, folder, "agent.py"))
+        if os.path.exists(path):
+            return path
+
+    # Fallback: derive folder name from agent_id (hyphens/dots → underscores)
+    derived = agent_id.replace("-", "_").replace(".", "_")
+    path = os.path.abspath(os.path.join(AGENTS_DIR, derived, "agent.py"))
+    if os.path.exists(path):
+        AGENT_MODULE_MAP[agent_id] = derived  # cache it for next time
+        return path
+
+    return None
+
+def register_agent_module(agent_id: str, folder_name: str):
+    """Called by main.py after saving a new agent to disk. Updates the live map."""
+    AGENT_MODULE_MAP[agent_id] = folder_name
 
 def _blocking_run(script: str, input_text: str):
-    """Synchronous subprocess run — safe on Windows."""
+    env = os.environ.copy()
     start = time.time()
     result = subprocess.run(
         [sys.executable, script],
         input=input_text.encode("utf-8"),
         capture_output=True,
-        timeout=30
+        timeout=30,
+        env=env
     )
     latency_ms = (time.time() - start) * 1000
     stdout = result.stdout.decode("utf-8", errors="replace").replace("\r\n", "\n").replace("\r", "\n")
@@ -41,8 +58,8 @@ def _blocking_run(script: str, input_text: str):
 async def _run_agent(agent_id: str, input_text: str):
     """Run agent in thread pool, returns (stdout, stderr, success, latency_ms)."""
     script = _get_script(agent_id)
-    if not script or not os.path.exists(script):
-        return "", f"Script not found for {agent_id}", False, 0
+    if not script:
+        return "", f"Agent '{agent_id}' not found. It may not have been saved correctly.", False, 0
     loop = asyncio.get_event_loop()
     with concurrent.futures.ThreadPoolExecutor() as pool:
         return await loop.run_in_executor(pool, _blocking_run, script, input_text)

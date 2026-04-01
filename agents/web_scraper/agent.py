@@ -4,6 +4,9 @@ AgentForge - Web Scraper Agent
 Reads a URL from stdin, fetches and extracts main text content.
 """
 import sys
+sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
+sys.stdin = open(sys.stdin.fileno(), mode='r', encoding='utf-8', buffering=1)
+
 import re
 
 def extract_text(html: str) -> str:
@@ -36,7 +39,7 @@ def main():
         text = extract_text(html)
         # Trim to reasonable size
         print(f"[Scraped from: {url}]\n")
-        print(text[:5000])
+        print(text[:10000])
     except Exception as e:
         print(f"[Web Scraper Error] Could not fetch {url}: {e}")
 

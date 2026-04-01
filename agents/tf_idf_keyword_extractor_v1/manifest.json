@@ -1,0 +1,21 @@
+{
+  "id": "tf-idf-keyword-extractor-v1",
+  "name": "TF-IDF Keyword Extractor",
+  "description": "Extracts top keywords from any text using TF-IDF scoring and detects the primary topic. Zero dependencies \u2014 pure Python implementation.",
+  "author": "anonymous",
+  "version": "1.0",
+  "tags": [
+    "NLP",
+    "text",
+    "extraction",
+    "analysis",
+    "classification"
+  ],
+  "input": {
+    "type": "text"
+  },
+  "output": {
+    "type": "text"
+  },
+  "entry": "agent.py"
+}

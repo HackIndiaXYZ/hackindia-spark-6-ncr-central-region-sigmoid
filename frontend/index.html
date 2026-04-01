@@ -5,16 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AgentForge — AI Agent Marketplace</title>
   <link rel="stylesheet" href="/static/style.css"/>
+  <style>
+    /* Section tabs */
+    .section-tabs { display:flex; gap:6px; margin-bottom:20px; }
+    .section-tab { font-family:var(--mono); font-size:12px; padding:7px 16px; border-radius:var(--radius); border:1px solid var(--border); background:transparent; color:var(--text3); cursor:pointer; transition:all 0.15s; }
+    .section-tab.active { color:var(--green); border-color:var(--green3); background:rgba(0,255,136,0.05); }
+    .section-tab:hover { color:var(--text); border-color:var(--border2); }
+
+    /* Star rating */
+    .star-rating { display:flex; gap:1px; margin:4px 0; }
+    .star { font-size:11px; color:var(--border2); }
+    .star.filled { color:#F59E0B; }
+
+    /* Verified badge */
+    .verified-badge { display:inline-flex; align-items:center; gap:3px; font-family:var(--mono); font-size:9px; color:var(--green); background:rgba(0,255,136,0.08); border:1px solid var(--green3); border-radius:2px; padding:1px 5px; margin-left:6px; }
+
+    /* Save button */
+    .btn-save { font-family:var(--mono); font-size:10px; padding:4px 8px; background:transparent; border:1px solid var(--border); border-radius:var(--radius); color:var(--text3); cursor:pointer; transition:all 0.15s; }
+    .btn-save:hover { border-color:var(--green3); color:var(--green); }
+    .btn-save.saved { border-color:var(--green3); color:var(--green); background:rgba(0,255,136,0.05); }
+
+    /* Example prompts */
+    .example-prompts { margin-bottom:10px; }
+    .example-prompt-label { font-family:var(--mono); font-size:10px; color:var(--text3); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em; }
+    .prompt-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .prompt-chip { font-family:var(--mono); font-size:11px; padding:4px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:3px; color:var(--text2); cursor:pointer; transition:all 0.15s; }
+    .prompt-chip:hover { border-color:var(--green3); color:var(--green); }
+
+    /* Workspace sidebar pill */
+    .workspace-bar { position:fixed; bottom:24px; right:24px; background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); padding:10px 16px; font-family:var(--mono); font-size:12px; color:var(--text); display:none; align-items:center; gap:10px; z-index:100; box-shadow:0 4px 24px rgba(0,0,0,0.4); }
+    .workspace-bar.visible { display:flex; }
+    .workspace-count { color:var(--green); font-weight:700; }
+  </style>
 </head>
 <body>
 
 <nav class="topbar">
-  <a class="logo" href="/">
-    <span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span>
-  </a>
+  <a class="logo" href="/"><span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span></a>
   <div class="nav">
     <a href="/" class="active">Marketplace</a>
     <a href="/builder">Pipeline Builder</a>
+    <a href="/analytics">Analytics</a>
     <a href="/submit">Submit Agent</a>
   </div>
   <div class="status-dot" title="API online"></div>
@@ -28,18 +59,9 @@
     <h1>Discover. <span>Chain.</span> Deploy.</h1>
     <p>Browse verified AI agents, compose them into live pipelines, and deploy — without writing glue code.</p>
     <div class="stats-row">
-      <div class="stat">
-        <div class="stat-val" id="stat-agents">—</div>
-        <div class="stat-label">Agents</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="stat-runs">—</div>
-        <div class="stat-label">Total Runs</div>
-      </div>
-      <div class="stat">
-        <div class="stat-val" id="stat-top">—</div>
-        <div class="stat-label">Top Trust Score</div>
-      </div>
+      <div class="stat"><div class="stat-val" id="stat-agents">—</div><div class="stat-label">Agents</div></div>
+      <div class="stat"><div class="stat-val" id="stat-runs">—</div><div class="stat-label">Total Runs</div></div>
+      <div class="stat"><div class="stat-val" id="stat-top">—</div><div class="stat-label">Top Trust Score</div></div>
     </div>
   </div>
 
@@ -49,22 +71,23 @@
     <span class="search-icon">⌕</span>
   </div>
 
-  <!-- Grid -->
+  <!-- Section tabs + header -->
   <div class="section-head">
-    <div class="section-title">Available Agents</div>
-    <a href="/builder" class="btn btn-primary" style="font-size:12px;padding:8px 16px;">
-      Open Pipeline Builder →
-    </a>
+    <div class="section-tabs">
+      <button class="section-tab active" onclick="switchSection('all')" id="tab-all">All Agents</button>
+      <button class="section-tab" onclick="switchSection('trending')" id="tab-trending">🔥 Trending</button>
+      <button class="section-tab" onclick="switchSection('top')" id="tab-top">⭐ Top Rated</button>
+      <button class="section-tab" onclick="switchSection('new')" id="tab-new">🆕 New</button>
+    </div>
+    <a href="/builder" class="btn btn-primary" style="font-size:12px;padding:8px 16px;">Open Pipeline Builder →</a>
   </div>
 
   <div class="agents-grid" id="agents-grid">
-    <!-- Shimmer placeholders -->
     <div class="loading-shimmer" style="height:200px;"></div>
     <div class="loading-shimmer" style="height:200px;"></div>
     <div class="loading-shimmer" style="height:200px;"></div>
     <div class="loading-shimmer" style="height:200px;"></div>
   </div>
-
 </div>
 
 <!-- Agent detail modal -->
@@ -73,10 +96,17 @@
     <div style="padding:28px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
         <div>
-          <div class="card-name" id="modal-name" style="font-size:18px;"></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="card-name" id="modal-name" style="font-size:18px;"></div>
+            <span id="modal-verified" class="verified-badge" style="display:none;">✓ verified</span>
+          </div>
           <div class="card-version" id="modal-author" style="margin-top:4px;"></div>
+          <div class="star-rating" id="modal-stars"></div>
         </div>
-        <button onclick="closeModal()" class="btn btn-ghost" style="font-size:18px;padding:4px 12px;">×</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="modal-save-btn" class="btn-save" onclick="toggleSave()">♡ Save</button>
+          <button onclick="closeModal()" class="btn btn-ghost" style="font-size:18px;padding:4px 12px;">×</button>
+        </div>
       </div>
       <p id="modal-desc" style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:20px;"></p>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
@@ -94,6 +124,13 @@
         </div>
       </div>
       <div id="modal-tags" class="card-tags" style="margin-bottom:20px;"></div>
+
+      <!-- Example prompts -->
+      <div class="example-prompts" id="modal-prompts" style="display:none;">
+        <div class="example-prompt-label">Example inputs</div>
+        <div class="prompt-chips" id="modal-prompt-chips"></div>
+      </div>
+
       <!-- Quick test -->
       <div style="border-top:1px solid var(--border);padding-top:20px;">
         <div class="form-label">Quick Test</div>
@@ -114,6 +151,13 @@
   </div>
 </div>
 
+<!-- Workspace bar -->
+<div class="workspace-bar" id="workspace-bar">
+  <span>💾 Workspace: <span class="workspace-count" id="workspace-count">0</span> saved</span>
+  <button class="btn btn-secondary" style="font-size:11px;padding:5px 10px;" onclick="openWorkspace()">View</button>
+  <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;" onclick="clearWorkspace()">Clear</button>
+</div>
+
 <div class="toast-container" id="toasts"></div>
 
 <script>
@@ -121,7 +165,69 @@ const API = '';
 let allAgents = [];
 let currentAgent = null;
 let searchTimeout = null;
+let currentSection = 'all';
 
+const VERIFIED_IDS = new Set(['summarizer-v1','code-explainer-v1','web-scraper-v1','email-drafter-v1']);
+
+const EXAMPLE_PROMPTS = {
+  'summarizer-v1': [
+    'The Transformer architecture uses self-attention to process sequences in parallel...',
+    'Climate change refers to long-term shifts in global temperatures and weather patterns...',
+    'Paste any long article or research abstract here to get bullet-point highlights.',
+  ],
+  'code-explainer-v1': [
+    'def fibonacci(n):\n    if n <= 1: return n\n    return fibonacci(n-1) + fibonacci(n-2)',
+    'const debounce = (fn, delay) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); }; }',
+    'SELECT u.name, COUNT(o.id) FROM users u LEFT JOIN orders o ON u.id = o.user_id GROUP BY u.id',
+  ],
+  'web-scraper-v1': [
+    'https://en.wikipedia.org/wiki/Artificial_intelligence',
+    'https://en.wikipedia.org/wiki/Python_(programming_language)',
+    'https://example.com',
+  ],
+  'email-drafter-v1': [
+    'Meeting rescheduled to Friday 3pm. Please confirm attendance.',
+    'Project deadline extended by one week due to technical issues.',
+    'Requesting feedback on the Q3 report submitted yesterday.',
+  ],
+};
+
+function trustToStars(trust) {
+  const score = trust * 5;
+  return Array.from({length:5}, (_,i) =>
+    `<span class="star ${i < Math.round(score) ? 'filled' : ''}">★</span>`
+  ).join('');
+}
+
+// ── Section tabs ───────────────────────────────────────────────────
+function switchSection(section) {
+  currentSection = section;
+  ['all','trending','top','new'].forEach(s => {
+    document.getElementById(`tab-${s}`).classList.toggle('active', s === section);
+  });
+  applySection(allAgents);
+}
+
+function applySection(agents) {
+  let filtered = [...agents];
+  if (currentSection === 'trending') {
+    filtered = [...agents].sort((a,b) => (b.total_runs||0) - (a.total_runs||0));
+  } else if (currentSection === 'top') {
+    filtered = [...agents].sort((a,b) => (b.trust_score||0) - (a.trust_score||0));
+  } else if (currentSection === 'new') {
+    // Sort by ID string — user-submitted agents get IDs after demo agents
+    filtered = [...agents].sort((a, b) => {
+      const isADemo = ['summarizer-v1','code-explainer-v1','web-scraper-v1','email-drafter-v1'].includes(a.id);
+      const isBDemo = ['summarizer-v1','code-explainer-v1','web-scraper-v1','email-drafter-v1'].includes(b.id);
+      if (isADemo && !isBDemo) return 1;
+      if (!isADemo && isBDemo) return -1;
+      return 0;
+    });
+  }
+  renderAgents(filtered);
+}
+
+// ── Stats ──────────────────────────────────────────────────────────
 async function loadStats() {
   try {
     const r = await fetch(`${API}/api/stats`);
@@ -140,29 +246,38 @@ async function loadAgents(query = '') {
     const r = await fetch(url);
     const d = await r.json();
     allAgents = d.agents || [];
-    renderAgents(allAgents);
+    applySection(allAgents);
   } catch(e) {
     grid.innerHTML = '<div class="empty-state">Failed to load agents. Is the server running?</div>';
   }
 }
 
+// ── Render ─────────────────────────────────────────────────────────
 function renderAgents(agents) {
   const grid = document.getElementById('agents-grid');
   if (!agents.length) {
     grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">//  no agents found</div>';
     return;
   }
+  const workspace = getWorkspace();
   grid.innerHTML = agents.map(a => {
-    const trust = typeof a.trust_score === 'number' ? a.trust_score : 0.5;
+    const trust = typeof a.trust_score === 'number' ? a.trust_score : 0.7;
     const trustPct = (trust * 100).toFixed(0);
     const tags = Array.isArray(a.tags) ? a.tags : [];
     const isLow = trust < 0.4;
+    const isVerified = VERIFIED_IDS.has(a.id);
+    const isSaved = workspace.some(w => w.id === a.id);
+    const stars = trustToStars(trust);
     return `
       <div class="agent-card" onclick="openModal('${a.id}')">
         <div class="card-header">
           <div>
-            <div class="card-name">${a.name}</div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div class="card-name">${a.name}</div>
+              ${isVerified ? '<span class="verified-badge">✓</span>' : ''}
+            </div>
             <div class="card-version">v${a.version || '1.0'} · by ${a.author || 'unknown'}</div>
+            <div class="star-rating">${stars}</div>
           </div>
           <div class="trust-badge ${isLow ? 'low' : ''}">⬡ ${trustPct}%</div>
         </div>
@@ -175,30 +290,66 @@ function renderAgents(agents) {
             <span>${a.total_runs || 0}</span> runs ·
             <span>${a.input_type || 'text'}</span> → <span>${a.output_type || 'text'}</span>
           </div>
-          <button class="btn-add" onclick="event.stopPropagation();addToPipelineById('${a.id}','${a.name}')">+ Pipeline</button>
+          <div style="display:flex;gap:6px;">
+            <button class="btn-save ${isSaved?'saved':''}" onclick="event.stopPropagation();toggleSaveById('${a.id}','${a.name}',this)">${isSaved?'♥':'♡'}</button>
+            <button class="btn-add" onclick="event.stopPropagation();addToPipelineById('${a.id}','${a.name}')">+ Pipeline</button>
+            <button class="btn-add" onclick="event.stopPropagation();deleteAgent('${a.id}','${a.name}')" style="border-color:var(--red);color:var(--red);">✕</button>
+          </div>
         </div>
       </div>
     `;
   }).join('');
 }
 
+// ── Modal ──────────────────────────────────────────────────────────
 function openModal(id) {
   const a = allAgents.find(x => x.id === id);
   if (!a) return;
   currentAgent = a;
-  const trust = (a.trust_score || 0.5) * 100;
+  const trust = (a.trust_score || 0.7) * 100;
+  const isVerified = VERIFIED_IDS.has(a.id);
+  const workspace = getWorkspace();
+  const isSaved = workspace.some(w => w.id === a.id);
+
   document.getElementById('modal-name').textContent = a.name;
+  document.getElementById('modal-verified').style.display = isVerified ? 'inline-flex' : 'none';
   document.getElementById('modal-author').textContent = `v${a.version || '1.0'} · by ${a.author || 'unknown'}`;
+  document.getElementById('modal-stars').innerHTML = trustToStars(a.trust_score || 0.7);
   document.getElementById('modal-desc').textContent = a.description;
   document.getElementById('modal-trust').textContent = trust.toFixed(0) + '%';
   document.getElementById('modal-runs').textContent = a.total_runs || 0;
   document.getElementById('modal-latency').textContent = a.avg_latency_ms ? Math.round(a.avg_latency_ms) + 'ms' : '—';
+
   const tags = Array.isArray(a.tags) ? a.tags : [];
   document.getElementById('modal-tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+  // Save button state
+  const saveBtn = document.getElementById('modal-save-btn');
+  saveBtn.textContent = isSaved ? '♥ Saved' : '♡ Save';
+  saveBtn.className = `btn-save ${isSaved ? 'saved' : ''}`;
+
+  // Example prompts
+  const prompts = EXAMPLE_PROMPTS[a.id] || [];
+  const promptsEl = document.getElementById('modal-prompts');
+  const chipsEl = document.getElementById('modal-prompt-chips');
+  if (prompts.length) {
+    promptsEl.style.display = 'block';
+    chipsEl.innerHTML = prompts.map(p =>
+      `<div class="prompt-chip" onclick="usePrompt(this)" title="${p}">${p.slice(0,48)}${p.length>48?'…':''}</div>`
+    ).join('');
+  } else {
+    promptsEl.style.display = 'none';
+  }
+
   document.getElementById('modal-test-input').value = '';
   document.getElementById('modal-output').textContent = '';
   document.getElementById('modal-terminal').style.display = 'none';
   document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function usePrompt(el) {
+  // Get full text from title attr
+  document.getElementById('modal-test-input').value = el.title || el.textContent;
 }
 
 function closeModal() {
@@ -206,6 +357,7 @@ function closeModal() {
   currentAgent = null;
 }
 
+// ── Test agent ─────────────────────────────────────────────────────
 async function testAgent() {
   if (!currentAgent) return;
   const input = document.getElementById('modal-test-input').value.trim();
@@ -220,8 +372,7 @@ async function testAgent() {
   output.textContent = '';
   output.innerHTML = '<span class="t-prompt">$ </span><span class="t-meta">running ' + currentAgent.name + '...</span>\n\n';
   titleEl.textContent = currentAgent.id;
-  btn.disabled = true;
-  btn.textContent = '● Running';
+  btn.disabled = true; btn.textContent = '● Running';
 
   try {
     const resp = await fetch(`${API}/api/agent/run`, {
@@ -229,11 +380,9 @@ async function testAgent() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ agent_ids: [currentAgent.id], input_text: input })
     });
-
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
-
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -249,23 +398,20 @@ async function testAgent() {
             span.textContent = ev.content;
             output.appendChild(span);
             output.scrollTop = output.scrollHeight;
-          } else if (ev.type === 'done') {
-            output.textContent += '\n\n';
           }
         } catch(e) {}
       }
     }
-    // Update stats display
     loadStats();
     loadAgents(document.getElementById('search-input').value);
   } catch(err) {
     output.textContent += `\n[FETCH ERROR] ${err.message}`;
   } finally {
-    btn.disabled = false;
-    btn.textContent = '▶ Run Agent';
+    btn.disabled = false; btn.textContent = '▶ Run Agent';
   }
 }
 
+// ── Pipeline ───────────────────────────────────────────────────────
 function addToBuilder() {
   if (!currentAgent) return;
   addToPipelineById(currentAgent.id, currentAgent.name);
@@ -274,15 +420,79 @@ function addToBuilder() {
 
 function addToPipelineById(id, name) {
   let pipeline = JSON.parse(sessionStorage.getItem('pipeline') || '[]');
-  if (pipeline.find(a => a.id === id)) {
-    toast(`${name} already in pipeline`, 'error');
-    return;
-  }
+  if (pipeline.find(a => a.id === id)) { toast(`${name} already in pipeline`, 'error'); return; }
   pipeline.push({ id, name });
   sessionStorage.setItem('pipeline', JSON.stringify(pipeline));
   toast(`${name} added to pipeline ✓`, 'success');
 }
 
+// ── Workspace (save) ───────────────────────────────────────────────
+function getWorkspace() {
+  try { return JSON.parse(sessionStorage.getItem('workspace') || '[]'); } catch { return []; }
+}
+
+function saveWorkspace(ws) {
+  sessionStorage.setItem('workspace', JSON.stringify(ws));
+  const count = ws.length;
+  document.getElementById('workspace-count').textContent = count;
+  document.getElementById('workspace-bar').classList.toggle('visible', count > 0);
+}
+
+function toggleSave() {
+  if (!currentAgent) return;
+  toggleSaveById(currentAgent.id, currentAgent.name, document.getElementById('modal-save-btn'));
+  // re-render modal save state
+  const ws = getWorkspace();
+  const isSaved = ws.some(w => w.id === currentAgent.id);
+  const btn = document.getElementById('modal-save-btn');
+  btn.textContent = isSaved ? '♥ Saved' : '♡ Save';
+  btn.className = `btn-save ${isSaved ? 'saved' : ''}`;
+}
+
+function toggleSaveById(id, name, btnEl) {
+  let ws = getWorkspace();
+  const idx = ws.findIndex(w => w.id === id);
+  if (idx >= 0) {
+    ws.splice(idx, 1);
+    if (btnEl) { btnEl.textContent = '♡'; btnEl.classList.remove('saved'); }
+    toast(`${name} removed from workspace`, '');
+  } else {
+    ws.push({ id, name });
+    if (btnEl) { btnEl.textContent = '♥'; btnEl.classList.add('saved'); }
+    toast(`${name} saved to workspace ✓`, 'success');
+  }
+  saveWorkspace(ws);
+  // re-render cards to reflect save state
+  applySection(allAgents);
+}
+
+function openWorkspace() {
+  const ws = getWorkspace();
+  if (!ws.length) { toast('Workspace is empty', ''); return; }
+  toast(`Saved: ${ws.map(w => w.name).join(', ')}`, 'success');
+}
+
+function clearWorkspace() {
+  saveWorkspace([]);
+  applySection(allAgents);
+  toast('Workspace cleared', '');
+}
+
+// ── Delete ─────────────────────────────────────────────────────────
+async function deleteAgent(id, name) {
+  if (!confirm(`Remove "${name}" from marketplace?`)) return;
+  const r = await fetch(`/api/agents/${id}`, { method: 'DELETE' });
+  const d = await r.json();
+  if (d.success) {
+    toast(`${name} removed`, 'success');
+    loadAgents(document.getElementById('search-input').value);
+    loadStats();
+  } else {
+    toast('Delete failed', 'error');
+  }
+}
+
+// ── Toast ──────────────────────────────────────────────────────────
 function toast(msg, type = '') {
   const el = document.createElement('div');
   el.className = `toast ${type}`;
@@ -291,20 +501,25 @@ function toast(msg, type = '') {
   setTimeout(() => el.remove(), 3000);
 }
 
-// Search with debounce
+// ── Search ─────────────────────────────────────────────────────────
 document.getElementById('search-input').addEventListener('input', e => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => loadAgents(e.target.value.trim()), 300);
 });
 
-// Close modal on overlay click
 document.getElementById('modal-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('modal-overlay')) closeModal();
 });
 
-// Init
+// ── Init ───────────────────────────────────────────────────────────
 loadStats();
 loadAgents();
+// restore workspace bar
+const _ws = getWorkspace();
+if (_ws.length) {
+  document.getElementById('workspace-count').textContent = _ws.length;
+  document.getElementById('workspace-bar').classList.add('visible');
+}
 </script>
 </body>
 </html>

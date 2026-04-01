@@ -1,0 +1,20 @@
+{
+  "id": "sentiment-analyzer-v1",
+  "name": "Sentiment & Emotion Analyzer",
+  "description": "Analyzes text for sentiment (positive/negative/neutral) and primary emotion using LLM reasoning. Falls back to rule-based analysis if API unavailable.",
+  "author": "Rehaan",
+  "version": "1.0",
+  "tags": [
+    "NLP",
+    "text",
+    "classification",
+    "analysis"
+  ],
+  "input": {
+    "type": "text"
+  },
+  "output": {
+    "type": "text"
+  },
+  "entry": "agent.py"
+}

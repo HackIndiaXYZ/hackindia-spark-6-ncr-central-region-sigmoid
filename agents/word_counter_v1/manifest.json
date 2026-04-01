@@ -1,0 +1,19 @@
+{
+  "id": "word-counter-v1",
+  "name": "Word Counter",
+  "description": "Counts words and characters in any text input",
+  "author": "anonymous",
+  "version": "1.0",
+  "tags": [
+    "analysis",
+    "text",
+    "data"
+  ],
+  "input": {
+    "type": "text"
+  },
+  "output": {
+    "type": "text"
+  },
+  "entry": "agent.py"
+}

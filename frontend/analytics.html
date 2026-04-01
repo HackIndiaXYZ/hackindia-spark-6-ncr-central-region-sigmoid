@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgentForge — Analytics</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+  <style>
+    .analytics-layout { max-width: 1200px; margin: 0 auto; padding: 40px 28px 80px; }
+
+    /* Top stat strip */
+    .kpi-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 36px; }
+    .kpi { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:18px 16px; position:relative; overflow:hidden; transition:border-color 0.2s; }
+    .kpi:hover { border-color:var(--green3); }
+    .kpi::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--green3),transparent); }
+    .kpi-label { font-family:var(--mono); font-size:9px; color:var(--text3); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:8px; }
+    .kpi-val { font-family:var(--mono); font-size:28px; font-weight:700; color:var(--green); line-height:1; }
+    .kpi-sub { font-family:var(--mono); font-size:10px; color:var(--text3); margin-top:5px; }
+
+    /* View tabs */
+    .view-tabs { display:flex; gap:0; margin-bottom:28px; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; width:fit-content; }
+    .view-tab { font-family:var(--mono); font-size:12px; padding:9px 20px; background:transparent; color:var(--text3); cursor:pointer; border:none; border-right:1px solid var(--border); transition:all 0.15s; }
+    .view-tab:last-child { border-right:none; }
+    .view-tab.active { background:rgba(0,255,136,0.07); color:var(--green); }
+    .view-tab:hover:not(.active) { color:var(--text); background:var(--bg2); }
+
+    /* View panels */
+    .view-panel { display:none; }
+    .view-panel.active { display:block; }
+
+    /* Section header */
+    .sh { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .sh-title { font-family:var(--mono); font-size:12px; color:var(--text3); letter-spacing:0.08em; }
+    .sh-sub { font-family:var(--mono); font-size:11px; color:var(--text3); }
+
+    /* Card container */
+    .card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); }
+    .card-pad { padding:20px; }
+
+    /* Horizontal bar chart (runs) */
+    .hbar-list { display:flex; flex-direction:column; gap:10px; }
+    .hbar-row { display:grid; grid-template-columns: 160px 1fr 50px; gap:12px; align-items:center; }
+    .hbar-name { font-family:var(--mono); font-size:12px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hbar-track { height:10px; background:var(--bg3); border-radius:3px; overflow:hidden; }
+    .hbar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,rgba(0,255,136,0.3),var(--green)); transition:width 0.9s cubic-bezier(.4,0,.2,1); }
+    .hbar-val { font-family:var(--mono); font-size:11px; color:var(--green); text-align:right; }
+
+    /* Trust table */
+    .trust-table { width:100%; border-collapse:collapse; }
+    .trust-table th { font-family:var(--mono); font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; padding:10px 16px; text-align:left; border-bottom:1px solid var(--border); }
+    .trust-table td { padding:12px 16px; border-bottom:1px solid var(--border); font-family:var(--mono); font-size:12px; }
+    .trust-table tr:last-child td { border-bottom:none; }
+    .trust-table tr:hover td { background:rgba(0,255,136,0.02); }
+    .rank-badge { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:3px; font-size:11px; font-weight:700; }
+    .rank-1 { background:rgba(255,193,7,0.15); color:#FFC107; border:1px solid rgba(255,193,7,0.3); }
+    .rank-2 { background:rgba(158,158,158,0.15); color:#9E9E9E; border:1px solid rgba(158,158,158,0.3); }
+    .rank-3 { background:rgba(205,127,50,0.15); color:#CD7F32; border:1px solid rgba(205,127,50,0.3); }
+    .rank-n { background:var(--bg3); color:var(--text3); border:1px solid var(--border); }
+    .trust-pill { display:inline-flex; align-items:center; gap:6px; }
+    .trust-mini-bar { width:60px; height:5px; background:var(--bg3); border-radius:2px; overflow:hidden; }
+    .trust-mini-fill { height:100%; background:var(--green); border-radius:2px; }
+
+    /* Agent detail cards */
+    .agent-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+    .agent-detail-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:18px; cursor:pointer; transition:border-color 0.15s; }
+    .agent-detail-card:hover { border-color:var(--green3); }
+    .adc-name { font-family:var(--mono); font-size:13px; color:var(--text); font-weight:700; margin-bottom:4px; }
+    .adc-id { font-family:var(--mono); font-size:10px; color:var(--text3); margin-bottom:12px; }
+    .adc-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+    .adc-stat { background:var(--bg3); border-radius:3px; padding:8px; text-align:center; }
+    .adc-stat-val { font-family:var(--mono); font-size:16px; color:var(--green); font-weight:700; }
+    .adc-stat-label { font-family:var(--mono); font-size:9px; color:var(--text3); text-transform:uppercase; margin-top:2px; }
+    .adc-trust-bar { height:4px; background:var(--bg3); border-radius:2px; overflow:hidden; }
+    .adc-trust-fill { height:100%; background:linear-gradient(90deg,var(--green3),var(--green)); }
+    .adc-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:10px; }
+    .adc-tag { font-family:var(--mono); font-size:9px; padding:2px 7px; background:var(--bg3); border:1px solid var(--border); border-radius:2px; color:var(--text3); }
+
+    /* Tag cloud */
+    .tag-cloud { display:flex; flex-wrap:wrap; gap:8px; }
+    .tag-pill-a { font-family:var(--mono); font-size:11px; padding:5px 12px; border-radius:3px; border:1px solid var(--border); color:var(--text2); background:var(--bg3); transition:all 0.15s; cursor:default; }
+    .tag-pill-a:hover { border-color:var(--green3); color:var(--green); }
+    .tag-pill-a .tc { color:var(--green); font-size:10px; margin-left:5px; }
+
+    /* Two col */
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+    .three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:24px; }
+
+    /* Pipeline stats */
+    .pipeline-row { display:flex; align-items:center; gap:8px; padding:10px 16px; border-bottom:1px solid var(--border); font-family:var(--mono); font-size:12px; }
+    .pipeline-row:last-child { border-bottom:none; }
+    .pipeline-dot { width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; }
+
+    /* Refresh */
+    .refresh-btn { font-family:var(--mono); font-size:11px; color:var(--text3); background:transparent; border:1px solid var(--border); border-radius:var(--radius); padding:6px 14px; cursor:pointer; transition:all 0.15s; }
+    .refresh-btn:hover { border-color:var(--green3); color:var(--green); }
+
+    /* Empty */
+    .empty-msg { font-family:var(--mono); font-size:12px; color:var(--text3); padding:32px; text-align:center; }
+
+    @media(max-width:900px) {
+      .kpi-strip { grid-template-columns:repeat(3,1fr); }
+      .two-col,.three-col { grid-template-columns:1fr; }
+      .hbar-row { grid-template-columns:120px 1fr 40px; }
+    }
+  </style>
+</head>
+<body>
+<nav class="topbar">
+  <a class="logo" href="/"><span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span></a>
+  <div class="nav">
+    <a href="/">Marketplace</a>
+    <a href="/builder">Pipeline Builder</a>
+    <a href="/analytics" class="active">Analytics</a>
+    <a href="/submit">Submit Agent</a>
+  </div>
+  <div class="status-dot"></div>
+</nav>
+
+<div class="analytics-layout">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;">
+    <div>
+      <div class="hero-tag">Platform Intelligence</div>
+      <h1 style="font-family:var(--mono);font-size:28px;font-weight:700;margin-bottom:6px;">Usage <span style="color:var(--green);">Analytics</span></h1>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--text3);" id="last-updated">Loading...</div>
+    </div>
+    <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-label">Total Agents</div>
+      <div class="kpi-val" id="k-agents">—</div>
+      <div class="kpi-sub">on platform</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total Runs</div>
+      <div class="kpi-val" id="k-runs">—</div>
+      <div class="kpi-sub">executions</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg Trust</div>
+      <div class="kpi-val" id="k-trust">—</div>
+      <div class="kpi-sub">across all agents</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Most Used</div>
+      <div class="kpi-val" style="font-size:14px;margin-top:4px;" id="k-top">—</div>
+      <div class="kpi-sub" id="k-top-runs">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Unique Tags</div>
+      <div class="kpi-val" id="k-tags">—</div>
+      <div class="kpi-sub">across all agents</div>
+    </div>
+  </div>
+
+  <!-- View tabs -->
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="switchView('overview')" id="vt-overview">Overview</button>
+    <button class="view-tab" onclick="switchView('agents')" id="vt-agents">Per Agent</button>
+    <button class="view-tab" onclick="switchView('trust')" id="vt-trust">Trust Scores</button>
+    <button class="view-tab" onclick="switchView('tags')" id="vt-tags">Tags</button>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div class="view-panel active" id="panel-overview">
+    <div class="two-col">
+      <!-- Runs bar chart (horizontal) -->
+      <div>
+        <div class="sh"><span class="sh-title">// RUNS PER AGENT</span><span class="sh-sub" id="ov-total-runs"></span></div>
+        <div class="card card-pad">
+          <div class="hbar-list" id="ov-hbar"></div>
+        </div>
+      </div>
+      <!-- Trust snapshot -->
+      <div>
+        <div class="sh"><span class="sh-title">// TRUST SNAPSHOT</span><span class="sh-sub">top 5</span></div>
+        <div class="card" style="padding:0;">
+          <table class="trust-table" id="ov-trust-snap">
+            <thead><tr><th>#</th><th>Agent</th><th>Trust</th><th>Runs</th></tr></thead>
+            <tbody id="ov-trust-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tag distribution + latency -->
+    <div class="two-col">
+      <div>
+        <div class="sh"><span class="sh-title">// TAG DISTRIBUTION</span></div>
+        <div class="card card-pad">
+          <div class="tag-cloud" id="ov-tags"></div>
+        </div>
+      </div>
+      <div>
+        <div class="sh"><span class="sh-title">// LATENCY OVERVIEW</span><span class="sh-sub">avg ms per agent</span></div>
+        <div class="card card-pad">
+          <div class="hbar-list" id="ov-latency"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PER AGENT TAB -->
+  <div class="view-panel" id="panel-agents">
+    <div class="sh">
+      <span class="sh-title">// ALL AGENTS — DETAILED VIEW</span>
+      <div style="display:flex;gap:8px;">
+        <select id="agent-sort" onchange="renderAgentCards()" style="font-family:var(--mono);font-size:11px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:5px 10px;border-radius:var(--radius);">
+          <option value="runs">Sort: Most Runs</option>
+          <option value="trust">Sort: Trust Score</option>
+          <option value="latency">Sort: Lowest Latency</option>
+          <option value="name">Sort: Name A-Z</option>
+        </select>
+      </div>
+    </div>
+    <div class="agent-grid" id="agent-cards"></div>
+  </div>
+
+  <!-- TRUST TAB -->
+  <div class="view-panel" id="panel-trust">
+    <div class="sh"><span class="sh-title">// FULL TRUST LEADERBOARD</span><span class="sh-sub">trust = success(50%) + latency(30%) + volume(20%)</span></div>
+    <div class="card" style="padding:0;">
+      <table class="trust-table">
+        <thead><tr><th>#</th><th>Agent</th><th>Trust Score</th><th>Runs</th><th>Success Rate</th><th>Avg Latency</th><th>Author</th></tr></thead>
+        <tbody id="trust-full-body"></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="sh"><span class="sh-title">// TRUST FORMULA BREAKDOWN</span></div>
+      <div class="two-col">
+        <div class="card card-pad">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:12px;">FORMULA</div>
+          <div style="font-family:var(--mono);font-size:13px;color:var(--green);line-height:2;">
+            trust = (success_rate × 0.50)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (latency_score × 0.30)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (volume_bonus × 0.20)
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:12px;">COMPONENTS</div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--text2);line-height:2.2;">
+            <span style="color:var(--green);">success_rate</span> = successful / total runs<br>
+            <span style="color:var(--green);">latency_score</span> = max(0, 1 - avg_ms/5000)<br>
+            <span style="color:var(--green);">volume_bonus</span> = min(runs/100, 1.0) × 0.2
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAGS TAB -->
+  <div class="view-panel" id="panel-tags">
+    <div class="two-col">
+      <div>
+        <div class="sh"><span class="sh-title">// ALL TAGS</span><span class="sh-sub" id="tags-total"></span></div>
+        <div class="card card-pad">
+          <div class="tag-cloud" id="tags-all"></div>
+        </div>
+      </div>
+      <div>
+        <div class="sh"><span class="sh-title">// AGENTS BY TAG</span></div>
+        <div class="card" style="padding:0;max-height:400px;overflow-y:auto;" id="tags-agent-list">
+          <div class="empty-msg">Select a tag above</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sh" style="margin-top:8px;"><span class="sh-title">// TAG FREQUENCY CHART</span></div>
+    <div class="card card-pad">
+      <div class="hbar-list" id="tags-hbar"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let _agents = [];
+let _tagData = {};
+
+function switchView(v) {
+  ['overview','agents','trust','tags'].forEach(t => {
+    document.getElementById(`vt-${t}`).classList.toggle('active', t===v);
+    document.getElementById(`panel-${t}`).classList.toggle('active', t===v);
+  });
+  if (v==='agents') renderAgentCards();
+  if (v==='trust') renderTrustFull();
+  if (v==='tags') renderTagsView();
+}
+
+async function loadAll() {
+  document.getElementById('last-updated').textContent = 'Refreshing...';
+  try {
+    const [statsR, agentsR] = await Promise.all([fetch('/api/stats'), fetch('/api/agents')]);
+    const stats = await statsR.json();
+    const agentsD = await agentsR.json();
+    _agents = agentsD.agents || [];
+    renderKPIs(stats, _agents);
+    renderOverview(_agents);
+    // re-render active tab
+    const active = document.querySelector('.view-tab.active')?.id?.replace('vt-','');
+    if (active && active !== 'overview') switchView(active);
+  } catch(e) { console.error(e); }
+  document.getElementById('last-updated').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+}
+
+function renderKPIs(stats, agents) {
+  document.getElementById('k-agents').textContent = stats.total_agents || 0;
+  document.getElementById('k-runs').textContent = stats.total_runs || 0;
+  const avg = agents.length ? (agents.reduce((s,a)=>s+(a.trust_score||0),0)/agents.length*100).toFixed(0)+'%' : '—';
+  document.getElementById('k-trust').textContent = avg;
+  if (stats.top_agents?.[0]) {
+    document.getElementById('k-top').textContent = stats.top_agents[0].name;
+    document.getElementById('k-top-runs').textContent = `${stats.top_agents[0].total_runs} runs`;
+  }
+  // count unique tags
+  const allTags = new Set();
+  agents.forEach(a => {
+    let tags = a.tags||[];
+    if(typeof tags==='string'){try{tags=JSON.parse(tags);}catch{tags=[];}}
+    tags.forEach(t=>allTags.add(t));
+  });
+  document.getElementById('k-tags').textContent = allTags.size;
+}
+
+function renderOverview(agents) {
+  const byRuns = [...agents].sort((a,b)=>(b.total_runs||0)-(a.total_runs||0));
+  const maxRuns = Math.max(...byRuns.map(a=>a.total_runs||0), 1);
+
+  // Horizontal bar chart
+  document.getElementById('ov-total-runs').textContent = `${byRuns.reduce((s,a)=>s+(a.total_runs||0),0)} total`;
+  document.getElementById('ov-hbar').innerHTML = byRuns.length
+    ? byRuns.map(a => {
+        const runs = a.total_runs||0;
+        const pct = (runs/maxRuns*100).toFixed(1);
+        return `<div class="hbar-row">
+          <div class="hbar-name" title="${a.name}">${a.name}</div>
+          <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%"></div></div>
+          <div class="hbar-val">${runs}</div>
+        </div>`;
+      }).join('')
+    : '<div class="empty-msg">No runs yet</div>';
+
+  // Trust snapshot top 5
+  const byTrust = [...agents].sort((a,b)=>(b.trust_score||0)-(a.trust_score||0)).slice(0,5);
+  document.getElementById('ov-trust-body').innerHTML = byTrust.map((a,i) => {
+    const t = ((a.trust_score||0)*100).toFixed(0);
+    const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
+    return `<tr>
+      <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+      <td style="color:var(--text);font-weight:700;">${a.name}<div style="font-size:10px;color:var(--text3);font-weight:400;">${a.id}</div></td>
+      <td><div class="trust-pill"><div class="trust-mini-bar"><div class="trust-mini-fill" style="width:${t}%"></div></div><span style="color:var(--green)">${t}%</span></div></td>
+      <td style="color:var(--text2)">${a.total_runs||0}</td>
+    </tr>`;
+  }).join('');
+
+  // Tag cloud
+  _tagData = {};
+  agents.forEach(a => {
+    let tags=a.tags||[];
+    if(typeof tags==='string'){try{tags=JSON.parse(tags);}catch{tags=[];}}
+    tags.forEach(t=>{_tagData[t]=(_tagData[t]||0)+1;});
+  });
+  const sortedTags = Object.entries(_tagData).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('ov-tags').innerHTML = sortedTags.map(([tag,count]) =>
+    `<div class="tag-pill-a">${tag}<span class="tc">${count}</span></div>`
+  ).join('') || '<div class="empty-msg">No tags</div>';
+
+  // Latency chart
+  const byLatency = [...agents].filter(a=>a.avg_latency_ms>0).sort((a,b)=>(a.avg_latency_ms||0)-(b.avg_latency_ms||0));
+  const maxLat = Math.max(...byLatency.map(a=>a.avg_latency_ms||0), 1);
+  document.getElementById('ov-latency').innerHTML = byLatency.length
+    ? byLatency.map(a => {
+        const lat = Math.round(a.avg_latency_ms||0);
+        const pct = (lat/maxLat*100).toFixed(1);
+        return `<div class="hbar-row">
+          <div class="hbar-name" title="${a.name}">${a.name}</div>
+          <div class="hbar-track"><div class="hbar-fill" style="width:${pct}%;background:linear-gradient(90deg,rgba(0,255,136,0.2),var(--green3))"></div></div>
+          <div class="hbar-val">${lat}ms</div>
+        </div>`;
+      }).join('')
+    : '<div class="empty-msg">No latency data yet — run some agents first</div>';
+}
+
+function renderAgentCards() {
+  const sort = document.getElementById('agent-sort').value;
+  let sorted = [..._agents];
+  if (sort==='runs') sorted.sort((a,b)=>(b.total_runs||0)-(a.total_runs||0));
+  else if (sort==='trust') sorted.sort((a,b)=>(b.trust_score||0)-(a.trust_score||0));
+  else if (sort==='latency') sorted.sort((a,b)=>(a.avg_latency_ms||9999)-(b.avg_latency_ms||9999));
+  else if (sort==='name') sorted.sort((a,b)=>a.name.localeCompare(b.name));
+
+  document.getElementById('agent-cards').innerHTML = sorted.map(a => {
+    const trust = ((a.trust_score||0)*100).toFixed(0);
+    const runs = a.total_runs||0;
+    const lat = a.avg_latency_ms ? Math.round(a.avg_latency_ms)+'ms' : '—';
+    let tags=a.tags||[];
+    if(typeof tags==='string'){try{tags=JSON.parse(tags);}catch{tags=[];}}
+    return `<div class="agent-detail-card">
+      <div class="adc-name">${a.name}</div>
+      <div class="adc-id">${a.id} · v${a.version||'1.0'} · ${a.author||'unknown'}</div>
+      <div class="adc-stats">
+        <div class="adc-stat"><div class="adc-stat-val">${trust}%</div><div class="adc-stat-label">Trust</div></div>
+        <div class="adc-stat"><div class="adc-stat-val">${runs}</div><div class="adc-stat-label">Runs</div></div>
+        <div class="adc-stat"><div class="adc-stat-val">${lat}</div><div class="adc-stat-label">Latency</div></div>
+      </div>
+      <div class="adc-trust-bar"><div class="adc-trust-fill" style="width:${trust}%"></div></div>
+      <div class="adc-tags">${tags.map(t=>`<span class="adc-tag">${t}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTrustFull() {
+  const sorted = [..._agents].sort((a,b)=>(b.trust_score||0)-(a.trust_score||0));
+  document.getElementById('trust-full-body').innerHTML = sorted.map((a,i) => {
+    const t = ((a.trust_score||0)*100).toFixed(0);
+    const runs = a.total_runs||0;
+    const sr = runs>0 ? Math.round((a.successful_runs||runs)/runs*100)+'%' : '—';
+    const lat = a.avg_latency_ms ? Math.round(a.avg_latency_ms)+'ms' : '—';
+    const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
+    return `<tr>
+      <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+      <td><span style="color:var(--text);font-weight:700;">${a.name}</span><div style="font-family:var(--mono);font-size:10px;color:var(--text3)">${a.id}</div></td>
+      <td><div class="trust-pill"><div class="trust-mini-bar"><div class="trust-mini-fill" style="width:${t}%"></div></div><span style="color:var(--green);margin-left:4px">${t}%</span></div></td>
+      <td style="color:var(--text2)">${runs}</td>
+      <td style="color:var(--green)">${sr}</td>
+      <td style="color:var(--text2)">${lat}</td>
+      <td style="color:var(--text3)">${a.author||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTagsView() {
+  const sorted = Object.entries(_tagData).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('tags-total').textContent = `${sorted.length} unique tags`;
+
+  // Clickable tag pills
+  document.getElementById('tags-all').innerHTML = sorted.map(([tag,count]) =>
+    `<div class="tag-pill-a" onclick="filterByTag('${tag}')" style="cursor:pointer;">${tag}<span class="tc">${count}</span></div>`
+  ).join('');
+
+  // Frequency hbar
+  const max = sorted[0]?.[1]||1;
+  document.getElementById('tags-hbar').innerHTML = sorted.map(([tag,count]) =>
+    `<div class="hbar-row">
+      <div class="hbar-name">${tag}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(count/max*100).toFixed(0)}%"></div></div>
+      <div class="hbar-val">${count}</div>
+    </div>`
+  ).join('');
+}
+
+function filterByTag(tag) {
+  const matched = _agents.filter(a => {
+    let tags=a.tags||[];
+    if(typeof tags==='string'){try{tags=JSON.parse(tags);}catch{tags=[];}}
+    return tags.includes(tag);
+  });
+  document.getElementById('tags-agent-list').innerHTML = matched.length
+    ? matched.map(a => `<div class="pipeline-row">
+        <div class="pipeline-dot"></div>
+        <div style="flex:1;font-family:var(--mono);font-size:12px;color:var(--text)">${a.name}</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text3)">${a.total_runs||0} runs</div>
+      </div>`).join('')
+    : '<div class="empty-msg">No agents with this tag</div>';
+}
+
+loadAll();
+setInterval(loadAll, 30000);
+</script>
+</body>
+</html>
