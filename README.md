@@ -46,7 +46,7 @@ Get a free Groq API key at [console.groq.com](https://console.groq.com) — take
 
 ### Marketplace — Discover & Search
 
-![Marketplace](images/2.png)
+![Marketplace](images/1.png)
 
 The main marketplace shows all registered agents as cards. Each card displays the agent name, author, version, a star rating (mapped from the trust score), capability tags, run count, and the input/output types. There are four tabs at the top — All Agents, Trending (sorted by most runs), Top Rated (sorted by trust score), and New (user-submitted agents float to the top). The search bar uses ChromaDB semantic search, which means you can search by what you want to do ("summarize text", "classify data") and it will find relevant agents even if your exact words don't appear in the agent name.
 
@@ -54,7 +54,7 @@ The main marketplace shows all registered agents as cards. Each card displays th
 
 ### Agent Detail Modal — Trust Metrics & Live Test
 
-![Agent Modal](images/3.png)
+![Agent Modal](images/2.png)
 
 Clicking any agent card opens a detail modal. This shows the trust score, total run count, average latency in milliseconds, and tags. Below that are example input chips — clicking one loads it into the test box. The Quick Test section lets you run the agent right there in the browser. Output streams in real time in a terminal-style UI.
 
@@ -62,7 +62,7 @@ Clicking any agent card opens a detail modal. This shows the trust score, total 
 
 ### Live Agent Execution — SSE Streaming Terminal
 
-![Running Agent](images/4.png)
+![Running Agent](images/3.png)
 
 When you hit Run Agent, the request goes to FastAPI which hands it off to the Executor. The Executor spawns an isolated subprocess running the agent's Python script. Output is streamed back chunk by chunk using Server-Sent Events (SSE) and displayed in the terminal as it arrives. This is not a fake animation — the output you see is the actual stdout of the process, streamed live.
 
@@ -70,7 +70,7 @@ When you hit Run Agent, the request goes to FastAPI which hands it off to the Ex
 
 ### Pipeline Builder — Chain Agents Visually
 
-![Pipeline Canvas](images/5.png)
+![Pipeline Canvas](images/4.png)
 
 The pipeline builder lets you drag agents onto a canvas and connect them in sequence. The system validates input/output type compatibility automatically — for example, the Web Scraper outputs `text` and the Text Summarizer expects `text`, so they chain cleanly. The validation bar at the bottom confirms the chain is valid and shows how many agents are connected.
 
@@ -78,7 +78,7 @@ The pipeline builder lets you drag agents onto a canvas and connect them in sequ
 
 ### Pipeline Running — Multi-Step SSE Stream
 
-![Pipeline Running](images/6.png)
+![Pipeline Running](images/5.png)
 
 When you run a pipeline, each agent executes in order. The output from step 1 becomes the input to step 2, and so on. Each step has a status badge that shows `running`, then `✓ done` with the latency in milliseconds once complete. The full output of each step streams in real time in its own section. In this example, the Web Scraper fetched the Wikipedia page for Artificial Intelligence (step 1 done in 1109ms), and the Text Summarizer is processing the extracted text (step 2 running).
 
@@ -86,7 +86,7 @@ When you run a pipeline, each agent executes in order. The output from step 1 be
 
 ### Developer Portal — Publish with Code
 
-![Submit Code](images/7.png)
+![Submit Code](images/6.png)
 
 The developer portal has three ways to publish an agent. The Write Code tab gives you a code editor right in the browser. You write your agent (it must read from stdin and write to stdout), click Test Run, and the backend saves it to a temp file and runs it in a sandbox subprocess. If it crashes, produces no output, or times out (15 seconds), it is rejected. Only if it passes does the Publish button unlock. You also fill in a manifest with the agent name, description, tags, and I/O types.
 
@@ -94,7 +94,7 @@ The developer portal has three ways to publish an agent. The Write Code tab give
 
 ### Developer Portal — Upload Trained ML Model
 
-![Upload Model](images/8.png)
+![Upload Model](images/7.png)
 
 The Upload Model tab lets you publish a trained sklearn model without writing any code. You upload a `.pkl` or `.joblib` file, optionally a scaler file, specify the number of features, feature names, class labels, and a test input. AgentForge automatically generates a Python wrapper agent that loads your model, parses comma-separated input from stdin, applies the scaler if provided, runs `.predict()` and `.predict_proba()`, and prints a formatted prediction report. The generated agent is then sandbox-tested before saving.
 
@@ -102,7 +102,7 @@ The Upload Model tab lets you publish a trained sklearn model without writing an
 
 ### Analytics — Overview Dashboard
 
-![Analytics Overview](images/9.png)
+![Analytics Overview](images/8.png)
 
 The analytics page has four tabs. The Overview tab shows a horizontal bar chart of runs per agent, a trust score snapshot of the top 5 agents, a tag distribution cloud, and a latency overview chart showing average response time per agent. Everything updates in real time from the database. The KPI strip at the top shows total agents, total runs, average trust score, most used agent, and number of unique tags across the platform.
 
@@ -110,7 +110,7 @@ The analytics page has four tabs. The Overview tab shows a horizontal bar chart 
 
 ### Analytics — Per Agent Detail View
 
-![Per Agent](images/10.png)
+![Per Agent](images/9.png)
 
 The Per Agent tab shows a card for every registered agent with its trust score, run count, and average latency. You can sort by most runs, trust score, lowest latency, or name. Each card also shows the agent's tags and a trust bar so you can visually compare agents at a glance.
 
@@ -118,7 +118,7 @@ The Per Agent tab shows a card for every registered agent with its trust score, 
 
 ### Analytics — Full Trust Leaderboard
 
-![Trust Leaderboard](images/1.png)
+![Trust Leaderboard](images/10.png)
 
 The Trust Scores tab shows the full leaderboard with gold, silver, and bronze rank badges. Columns include trust score with a mini bar, total runs, success rate, average latency, and author. The formula breakdown at the bottom explains exactly how the trust score is computed.
 
