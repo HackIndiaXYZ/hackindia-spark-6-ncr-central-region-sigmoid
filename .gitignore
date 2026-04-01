@@ -20,6 +20,7 @@ data/chroma/
 
 # Manifests (auto-generated on startup)
 manifests/
+teststuff/
 
 # Temp files
 *.tmp
