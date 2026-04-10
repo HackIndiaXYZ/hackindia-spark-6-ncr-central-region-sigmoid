@@ -6,40 +6,46 @@
   <title>AgentForge — AI Agent Marketplace</title>
   <link rel="stylesheet" href="/static/style.css"/>
   <style>
-    /* Section tabs */
-    .section-tabs { display:flex; gap:6px; margin-bottom:20px; }
-    .section-tab { font-family:var(--mono); font-size:12px; padding:7px 16px; border-radius:var(--radius); border:1px solid var(--border); background:transparent; color:var(--text3); cursor:pointer; transition:all 0.15s; }
-    .section-tab.active { color:var(--green); border-color:var(--green3); background:rgba(0,255,136,0.05); }
-    .section-tab:hover { color:var(--text); border-color:var(--border2); }
-
-    /* Star rating */
-    .star-rating { display:flex; gap:1px; margin:4px 0; }
-    .star { font-size:11px; color:var(--border2); }
-    .star.filled { color:#F59E0B; }
-
-    /* Verified badge */
-    .verified-badge { display:inline-flex; align-items:center; gap:3px; font-family:var(--mono); font-size:9px; color:var(--green); background:rgba(0,255,136,0.08); border:1px solid var(--green3); border-radius:2px; padding:1px 5px; margin-left:6px; }
-
-    /* Save button */
-    .btn-save { font-family:var(--mono); font-size:10px; padding:4px 8px; background:transparent; border:1px solid var(--border); border-radius:var(--radius); color:var(--text3); cursor:pointer; transition:all 0.15s; }
-    .btn-save:hover { border-color:var(--green3); color:var(--green); }
-    .btn-save.saved { border-color:var(--green3); color:var(--green); background:rgba(0,255,136,0.05); }
-
-    /* Example prompts */
-    .example-prompts { margin-bottom:10px; }
-    .example-prompt-label { font-family:var(--mono); font-size:10px; color:var(--text3); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em; }
-    .prompt-chips { display:flex; flex-wrap:wrap; gap:6px; }
-    .prompt-chip { font-family:var(--mono); font-size:11px; padding:4px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:3px; color:var(--text2); cursor:pointer; transition:all 0.15s; }
-    .prompt-chip:hover { border-color:var(--green3); color:var(--green); }
-
-    /* Workspace sidebar pill */
-    .workspace-bar { position:fixed; bottom:24px; right:24px; background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); padding:10px 16px; font-family:var(--mono); font-size:12px; color:var(--text); display:none; align-items:center; gap:10px; z-index:100; box-shadow:0 4px 24px rgba(0,0,0,0.4); }
-    .workspace-bar.visible { display:flex; }
-    .workspace-count { color:var(--green); font-weight:700; }
+    .section-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+    .section-tab{font-family:var(--mono);font-size:12px;padding:7px 16px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s;}
+    .section-tab.active{color:var(--green);border-color:var(--green3);background:rgba(0,255,136,0.05);}
+    .section-tab:hover{color:var(--text);border-color:var(--border2);}
+    .star-rating{display:flex;gap:1px;margin:4px 0;}
+    .star{font-size:11px;color:var(--border2);}
+    .star.filled{color:#F59E0B;}
+    .verified-badge{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:9px;color:var(--green);background:rgba(0,255,136,0.08);border:1px solid var(--green3);border-radius:2px;padding:1px 5px;margin-left:4px;}
+    .a2a-badge{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;color:#60A5FA;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.3);border-radius:2px;padding:1px 5px;margin-left:4px;}
+    .price-badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:2px;margin-left:4px;}
+    .price-free{color:var(--green);background:rgba(0,255,136,0.08);border:1px solid var(--green3);}
+    .price-paid{color:#F59E0B;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);}
+    .btn-save{font-family:var(--mono);font-size:10px;padding:4px 8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius);color:var(--text3);cursor:pointer;transition:all 0.15s;}
+    .btn-save:hover{border-color:var(--green3);color:var(--green);}
+    .btn-save.saved{border-color:var(--green3);color:var(--green);background:rgba(0,255,136,0.05);}
+    .example-prompts{margin-bottom:12px;}
+    .example-prompt-label{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+    .prompt-chips{display:flex;flex-wrap:wrap;gap:6px;}
+    .prompt-chip{font-family:var(--mono);font-size:11px;padding:4px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text2);cursor:pointer;transition:all 0.15s;}
+    .prompt-chip:hover{border-color:var(--green3);color:var(--green);}
+    .workspace-bar{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--text);display:none;align-items:center;gap:10px;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,0.4);}
+    .workspace-bar.visible{display:flex;}
+    .workspace-count{color:var(--green);font-weight:700;}
+    .modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;}
+    .modal-tab{font-family:var(--mono);font-size:11px;padding:8px 16px;background:transparent;color:var(--text3);cursor:pointer;border:none;border-bottom:2px solid transparent;transition:all 0.15s;}
+    .modal-tab.active{color:var(--green);border-bottom-color:var(--green);}
+    .modal-panel{display:none;}
+    .modal-panel.active{display:block;}
+    .history-row{padding:12px 0;border-bottom:1px solid var(--border);}
+    .history-row:last-child{border-bottom:none;}
+    .history-input{font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .history-output{font-family:var(--mono);font-size:11px;color:var(--text2);white-space:pre-wrap;max-height:80px;overflow:hidden;}
+    .history-meta{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:4px;}
+    .input-warning{font-family:var(--mono);font-size:11px;color:var(--red);margin-top:4px;display:none;}
+    .input-warning.visible{display:block;}
+    .version-select{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:4px 8px;border-radius:var(--radius);cursor:pointer;}
+    .subscribe-box{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius);padding:12px;font-family:var(--mono);font-size:12px;color:#F59E0B;margin-bottom:10px;}
   </style>
 </head>
 <body>
-
 <nav class="topbar">
   <a class="logo" href="/"><span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span></a>
   <div class="nav">
@@ -52,8 +58,6 @@
 </nav>
 
 <div class="container page">
-
-  <!-- Hero -->
   <div class="hero">
     <div class="hero-tag">AI Agents Marketplace</div>
     <h1>Discover. <span>Chain.</span> Deploy.</h1>
@@ -62,22 +66,23 @@
       <div class="stat"><div class="stat-val" id="stat-agents">—</div><div class="stat-label">Agents</div></div>
       <div class="stat"><div class="stat-val" id="stat-runs">—</div><div class="stat-label">Total Runs</div></div>
       <div class="stat"><div class="stat-val" id="stat-top">—</div><div class="stat-label">Top Trust Score</div></div>
+      <div class="stat"><div class="stat-val" id="stat-revenue">—</div><div class="stat-label">Est. Revenue (₹)</div></div>
     </div>
   </div>
 
-  <!-- Search -->
   <div class="search-wrap">
-    <input type="text" id="search-input" placeholder="Search agents by capability... e.g. 'summarize text', 'scrape web'" autocomplete="off"/>
+    <input type="text" id="search-input" placeholder="Search agents by capability... e.g. 'summarize text', 'classify data'" autocomplete="off"/>
     <span class="search-icon">⌕</span>
   </div>
 
-  <!-- Section tabs + header -->
   <div class="section-head">
     <div class="section-tabs">
       <button class="section-tab active" onclick="switchSection('all')" id="tab-all">All Agents</button>
       <button class="section-tab" onclick="switchSection('trending')" id="tab-trending">🔥 Trending</button>
       <button class="section-tab" onclick="switchSection('top')" id="tab-top">⭐ Top Rated</button>
       <button class="section-tab" onclick="switchSection('new')" id="tab-new">🆕 New</button>
+      <button class="section-tab" onclick="switchSection('free')" id="tab-free">🆓 Free</button>
+      <button class="section-tab" onclick="switchSection('paid')" id="tab-paid">💰 Paid</button>
     </div>
     <a href="/builder" class="btn btn-primary" style="font-size:12px;padding:8px 16px;">Open Pipeline Builder →</a>
   </div>
@@ -90,54 +95,72 @@
   </div>
 </div>
 
-<!-- Agent detail modal -->
+<!-- Agent modal -->
 <div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;">
-  <div id="modal" style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;width:min(640px,95vw);max-height:90vh;overflow-y:auto;">
+  <div id="modal" style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;width:min(680px,95vw);max-height:90vh;overflow-y:auto;">
     <div style="padding:28px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
         <div>
-          <div style="display:flex;align-items:center;gap:8px;">
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
             <div class="card-name" id="modal-name" style="font-size:18px;"></div>
             <span id="modal-verified" class="verified-badge" style="display:none;">✓ verified</span>
+            <span class="a2a-badge">A2A</span>
+            <span id="modal-price-badge" class="price-badge price-free">Free</span>
           </div>
           <div class="card-version" id="modal-author" style="margin-top:4px;"></div>
           <div class="star-rating" id="modal-stars"></div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select class="version-select" id="modal-version-select" style="display:none;" onchange="onVersionChange(this.value)"></select>
           <button id="modal-save-btn" class="btn-save" onclick="toggleSave()">♡ Save</button>
           <button onclick="closeModal()" class="btn btn-ghost" style="font-size:18px;padding:4px 12px;">×</button>
         </div>
       </div>
-      <p id="modal-desc" style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:20px;"></p>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Trust Score</div>
-          <div style="font-family:var(--mono);font-size:20px;color:var(--green);" id="modal-trust">—</div>
+
+      <p id="modal-desc" style="color:var(--text2);font-size:14px;line-height:1.7;margin-bottom:16px;"></p>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">Trust Score</div>
+          <div style="font-family:var(--mono);font-size:18px;color:var(--green);" id="modal-trust">—</div>
         </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Total Runs</div>
-          <div style="font-family:var(--mono);font-size:20px;color:var(--text);" id="modal-runs">—</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">Total Runs</div>
+          <div style="font-family:var(--mono);font-size:18px;color:var(--text);" id="modal-runs">—</div>
         </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Avg Latency</div>
-          <div style="font-family:var(--mono);font-size:20px;color:var(--text);" id="modal-latency">—</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">Avg Latency</div>
+          <div style="font-family:var(--mono);font-size:18px;color:var(--text);" id="modal-latency">—</div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">Est. Revenue</div>
+          <div style="font-family:var(--mono);font-size:18px;color:#F59E0B;" id="modal-revenue">₹0</div>
         </div>
       </div>
-      <div id="modal-tags" class="card-tags" style="margin-bottom:20px;"></div>
 
-      <!-- Example prompts -->
-      <div class="example-prompts" id="modal-prompts" style="display:none;">
-        <div class="example-prompt-label">Example inputs</div>
-        <div class="prompt-chips" id="modal-prompt-chips"></div>
+      <div id="modal-tags" class="card-tags" style="margin-bottom:16px;"></div>
+
+      <div class="modal-tabs">
+        <button class="modal-tab active" id="mtab-test" onclick="switchModalTab('test')">▶ Test</button>
+        <button class="modal-tab" id="mtab-history" onclick="switchModalTab('history')">📋 History</button>
+        <button class="modal-tab" id="mtab-info" onclick="switchModalTab('info')">ℹ Info</button>
       </div>
 
-      <!-- Quick test -->
-      <div style="border-top:1px solid var(--border);padding-top:20px;">
-        <div class="form-label">Quick Test</div>
-        <textarea class="form-textarea" id="modal-test-input" placeholder="Enter input to test this agent..." style="margin-bottom:12px;height:80px;"></textarea>
-        <div style="display:flex;gap:8px;">
+      <!-- TEST -->
+      <div class="modal-panel active" id="mpanel-test">
+        <div class="example-prompts" id="modal-prompts" style="display:none;">
+          <div class="example-prompt-label">Example inputs</div>
+          <div class="prompt-chips" id="modal-prompt-chips"></div>
+        </div>
+        <div class="form-label" style="margin-bottom:6px;">Input</div>
+        <textarea class="form-textarea" id="modal-test-input" placeholder="Enter input to test this agent..." style="margin-bottom:4px;height:80px;" oninput="onInputChange()"></textarea>
+        <div class="input-warning" id="input-warning"></div>
+        <div id="subscribe-cta" style="display:none;margin:10px 0;">
+          <div class="subscribe-box">💰 Paid agent — <button onclick="showSubscribeModal()" style="background:none;border:none;color:#F59E0B;text-decoration:underline;cursor:pointer;font-family:var(--mono);font-size:12px;">Subscribe to run →</button></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
           <button class="btn btn-primary" onclick="testAgent()" id="modal-run-btn">▶ Run Agent</button>
-          <button class="btn btn-secondary" onclick="addToBuilder()" id="modal-add-btn">+ Add to Pipeline</button>
+          <button class="btn btn-secondary" onclick="addToBuilder()">+ Add to Pipeline</button>
         </div>
         <div class="terminal" style="margin-top:16px;display:none;" id="modal-terminal">
           <div class="terminal-header">
@@ -147,11 +170,51 @@
           <div class="terminal-body" id="modal-output"></div>
         </div>
       </div>
+
+      <!-- HISTORY -->
+      <div class="modal-panel" id="mpanel-history">
+        <div id="history-list"><div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:20px 0;">Loading...</div></div>
+      </div>
+
+      <!-- INFO -->
+      <div class="modal-panel" id="mpanel-info">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;">Input Validation</div>
+            <div style="font-family:var(--mono);font-size:12px;color:var(--text2);" id="info-max-length">Max: 10,000 chars</div>
+            <div style="font-family:var(--mono);font-size:12px;color:var(--text2);margin-top:4px;" id="info-format">Format: any text</div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;">Pricing</div>
+            <div style="font-family:var(--mono);font-size:12px;color:var(--text2);" id="info-pricing">Free</div>
+            <div style="font-family:var(--mono);font-size:12px;color:#F59E0B;margin-top:4px;" id="info-revenue-detail"></div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;">Protocol</div>
+            <span class="a2a-badge" style="margin-left:0;">A2A Compatible</span>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:6px;">stdin → stdout standard</div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;">I/O Types</div>
+            <div style="font-family:var(--mono);font-size:13px;color:var(--text2);" id="info-io">— → —</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Workspace bar -->
+<!-- Subscribe modal -->
+<div id="sub-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:32px;max-width:380px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:12px;">💰</div>
+    <div style="font-family:var(--mono);font-size:16px;color:var(--text);margin-bottom:6px;" id="sub-name"></div>
+    <div style="font-family:var(--mono);font-size:28px;color:#F59E0B;margin-bottom:16px;" id="sub-price"></div>
+    <p style="color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:24px;">Payments integration coming soon. Contact the developer directly to get access to this premium agent.</p>
+    <button class="btn btn-primary" onclick="document.getElementById('sub-overlay').style.display='none'">Got it</button>
+  </div>
+</div>
+
 <div class="workspace-bar" id="workspace-bar">
   <span>💾 Workspace: <span class="workspace-count" id="workspace-count">0</span> saved</span>
   <button class="btn btn-secondary" style="font-size:11px;padding:5px 10px;" onclick="openWorkspace()">View</button>
@@ -161,365 +224,265 @@
 <div class="toast-container" id="toasts"></div>
 
 <script>
-const API = '';
-let allAgents = [];
-let currentAgent = null;
-let searchTimeout = null;
-let currentSection = 'all';
-
-const VERIFIED_IDS = new Set(['summarizer-v1','code-explainer-v1','web-scraper-v1','email-drafter-v1']);
-
-const EXAMPLE_PROMPTS = {
-  'summarizer-v1': [
-    'The Transformer architecture uses self-attention to process sequences in parallel...',
-    'Climate change refers to long-term shifts in global temperatures and weather patterns...',
-    'Paste any long article or research abstract here to get bullet-point highlights.',
-  ],
-  'code-explainer-v1': [
-    'def fibonacci(n):\n    if n <= 1: return n\n    return fibonacci(n-1) + fibonacci(n-2)',
-    'const debounce = (fn, delay) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); }; }',
-    'SELECT u.name, COUNT(o.id) FROM users u LEFT JOIN orders o ON u.id = o.user_id GROUP BY u.id',
-  ],
-  'web-scraper-v1': [
-    'https://en.wikipedia.org/wiki/Artificial_intelligence',
-    'https://en.wikipedia.org/wiki/Python_(programming_language)',
-    'https://example.com',
-  ],
-  'email-drafter-v1': [
-    'Meeting rescheduled to Friday 3pm. Please confirm attendance.',
-    'Project deadline extended by one week due to technical issues.',
-    'Requesting feedback on the Q3 report submitted yesterday.',
-  ],
+const API='';
+let allAgents=[],currentAgent=null,searchTimeout=null,currentSection='all';
+const VERIFIED_IDS=new Set(['summarizer-v1','code-explainer-v1','web-scraper-v1','email-drafter-v1']);
+const EXAMPLE_PROMPTS={
+  'summarizer-v1':['The Transformer architecture uses self-attention to process sequences in parallel...','Climate change refers to long-term shifts in global temperatures and weather patterns...','Paste any long article or research abstract here to get bullet-point highlights.'],
+  'code-explainer-v1':['def fibonacci(n):\n    if n <= 1: return n\n    return fibonacci(n-1) + fibonacci(n-2)','const debounce = (fn, delay) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); }; }'],
+  'web-scraper-v1':['https://en.wikipedia.org/wiki/Artificial_intelligence','https://en.wikipedia.org/wiki/Python_(programming_language)','https://example.com'],
+  'email-drafter-v1':['Meeting rescheduled to Friday 3pm. Please confirm attendance.','Project deadline extended by one week due to technical issues.'],
 };
 
-function trustToStars(trust) {
-  const score = trust * 5;
-  return Array.from({length:5}, (_,i) =>
-    `<span class="star ${i < Math.round(score) ? 'filled' : ''}">★</span>`
-  ).join('');
-}
+function trustToStars(t){const s=t*5;return Array.from({length:5},(_,i)=>`<span class="star ${i<Math.round(s)?'filled':''}">★</span>`).join('');}
+function priceBadge(a){const p=parseFloat(a.price_per_run||0);return p>0?`<span class="price-badge price-paid">₹${p}/run</span>`:'<span class="price-badge price-free">Free</span>';}
 
-// ── Section tabs ───────────────────────────────────────────────────
-function switchSection(section) {
-  currentSection = section;
-  ['all','trending','top','new'].forEach(s => {
-    document.getElementById(`tab-${s}`).classList.toggle('active', s === section);
-  });
+function switchSection(s){
+  currentSection=s;
+  ['all','trending','top','new','free','paid'].forEach(t=>document.getElementById(`tab-${t}`).classList.toggle('active',t===s));
   applySection(allAgents);
 }
 
-function applySection(agents) {
-  let filtered = [...agents];
-  if (currentSection === 'trending') {
-    filtered = [...agents].sort((a,b) => (b.total_runs||0) - (a.total_runs||0));
-  } else if (currentSection === 'top') {
-    filtered = [...agents].sort((a,b) => (b.trust_score||0) - (a.trust_score||0));
-  } else if (currentSection === 'new') {
-    // Sort by ID string — user-submitted agents get IDs after demo agents
-    filtered = [...agents].sort((a, b) => {
-      const isADemo = ['summarizer-v1','code-explainer-v1','web-scraper-v1','email-drafter-v1'].includes(a.id);
-      const isBDemo = ['summarizer-v1','code-explainer-v1','web-scraper-v1','email-drafter-v1'].includes(b.id);
-      if (isADemo && !isBDemo) return 1;
-      if (!isADemo && isBDemo) return -1;
-      return 0;
-    });
-  }
-  renderAgents(filtered);
+function applySection(agents){
+  let f=[...agents];
+  if(currentSection==='trending') f.sort((a,b)=>(b.total_runs||0)-(a.total_runs||0));
+  else if(currentSection==='top') f.sort((a,b)=>(b.trust_score||0)-(a.trust_score||0));
+  else if(currentSection==='new') f.sort((a,b)=>{const ad=VERIFIED_IDS.has(a.id),bd=VERIFIED_IDS.has(b.id);return ad&&!bd?1:!ad&&bd?-1:0;});
+  else if(currentSection==='free') f=f.filter(a=>!parseFloat(a.price_per_run||0));
+  else if(currentSection==='paid') f=f.filter(a=>parseFloat(a.price_per_run||0)>0);
+  renderAgents(f);
 }
 
-// ── Stats ──────────────────────────────────────────────────────────
-async function loadStats() {
-  try {
-    const r = await fetch(`${API}/api/stats`);
-    const d = await r.json();
-    document.getElementById('stat-agents').textContent = d.total_agents;
-    document.getElementById('stat-runs').textContent = d.total_runs;
-    const top = d.top_agents?.[0];
-    document.getElementById('stat-top').textContent = top ? (top.trust_score * 100).toFixed(0) + '%' : '—';
-  } catch(e) {}
+async function loadStats(){
+  try{
+    const[sr,rr]=await Promise.all([fetch('/api/stats'),fetch('/api/revenue')]);
+    const s=await sr.json(),rev=await rr.json();
+    document.getElementById('stat-agents').textContent=s.total_agents;
+    document.getElementById('stat-runs').textContent=s.total_runs;
+    const top=s.top_agents?.[0];
+    document.getElementById('stat-top').textContent=top?(top.trust_score*100).toFixed(0)+'%':'—';
+    document.getElementById('stat-revenue').textContent='₹'+rev.total_revenue.toFixed(2);
+  }catch(e){}
 }
 
-async function loadAgents(query = '') {
-  const grid = document.getElementById('agents-grid');
-  try {
-    const url = query ? `${API}/api/search?q=${encodeURIComponent(query)}` : `${API}/api/agents`;
-    const r = await fetch(url);
-    const d = await r.json();
-    allAgents = d.agents || [];
+async function loadAgents(query=''){
+  try{
+    const r=await fetch(query?`/api/search?q=${encodeURIComponent(query)}`:'/api/agents');
+    const d=await r.json();
+    allAgents=d.agents||[];
     applySection(allAgents);
-  } catch(e) {
-    grid.innerHTML = '<div class="empty-state">Failed to load agents. Is the server running?</div>';
-  }
+  }catch(e){document.getElementById('agents-grid').innerHTML='<div class="empty-state">Failed to load agents.</div>';}
 }
 
-// ── Render ─────────────────────────────────────────────────────────
-function renderAgents(agents) {
-  const grid = document.getElementById('agents-grid');
-  if (!agents.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">//  no agents found</div>';
-    return;
-  }
-  const workspace = getWorkspace();
-  grid.innerHTML = agents.map(a => {
-    const trust = typeof a.trust_score === 'number' ? a.trust_score : 0.7;
-    const trustPct = (trust * 100).toFixed(0);
-    const tags = Array.isArray(a.tags) ? a.tags : [];
-    const isLow = trust < 0.4;
-    const isVerified = VERIFIED_IDS.has(a.id);
-    const isSaved = workspace.some(w => w.id === a.id);
-    const stars = trustToStars(trust);
-    return `
-      <div class="agent-card" onclick="openModal('${a.id}')">
-        <div class="card-header">
-          <div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <div class="card-name">${a.name}</div>
-              ${isVerified ? '<span class="verified-badge">✓</span>' : ''}
-            </div>
-            <div class="card-version">v${a.version || '1.0'} · by ${a.author || 'unknown'}</div>
-            <div class="star-rating">${stars}</div>
+function renderAgents(agents){
+  const grid=document.getElementById('agents-grid');
+  if(!agents.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;">//  no agents found</div>';return;}
+  const ws=getWorkspace();
+  grid.innerHTML=agents.map(a=>{
+    const trust=typeof a.trust_score==='number'?a.trust_score:0.7;
+    const tags=Array.isArray(a.tags)?a.tags:[];
+    const isSaved=ws.some(w=>w.id===a.id);
+    return `<div class="agent-card" onclick="openModal('${a.id}')">
+      <div class="card-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+            <div class="card-name">${a.name}</div>
+            ${VERIFIED_IDS.has(a.id)?'<span class="verified-badge">✓</span>':''}
+            <span class="a2a-badge">A2A</span>
+            ${priceBadge(a)}
           </div>
-          <div class="trust-badge ${isLow ? 'low' : ''}">⬡ ${trustPct}%</div>
+          <div class="card-version">v${a.version||'1.0'} · by ${a.author||'unknown'}</div>
+          <div class="star-rating">${trustToStars(trust)}</div>
         </div>
-        <div class="card-desc">${a.description}</div>
-        <div class="card-tags">
-          ${tags.slice(0,4).map(t => `<span class="tag">${t}</span>`).join('')}
-        </div>
-        <div class="card-footer">
-          <div class="card-meta">
-            <span>${a.total_runs || 0}</span> runs ·
-            <span>${a.input_type || 'text'}</span> → <span>${a.output_type || 'text'}</span>
-          </div>
-          <div style="display:flex;gap:6px;">
-            <button class="btn-save ${isSaved?'saved':''}" onclick="event.stopPropagation();toggleSaveById('${a.id}','${a.name}',this)">${isSaved?'♥':'♡'}</button>
-            <button class="btn-add" onclick="event.stopPropagation();addToPipelineById('${a.id}','${a.name}')">+ Pipeline</button>
-            <button class="btn-add" onclick="event.stopPropagation();deleteAgent('${a.id}','${a.name}')" style="border-color:var(--red);color:var(--red);">✕</button>
-          </div>
+        <div class="trust-badge ${trust<0.4?'low':''}">⬡ ${(trust*100).toFixed(0)}%</div>
+      </div>
+      <div class="card-desc">${a.description}</div>
+      <div class="card-tags">${tags.slice(0,4).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="card-footer">
+        <div class="card-meta"><span>${a.total_runs||0}</span> runs · <span>${a.input_type||'text'}</span> → <span>${a.output_type||'text'}</span></div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-save ${isSaved?'saved':''}" onclick="event.stopPropagation();toggleSaveById('${a.id}','${a.name}',this)">${isSaved?'♥':'♡'}</button>
+          <button class="btn-add" onclick="event.stopPropagation();addToPipelineById('${a.id}','${a.name}')">+ Pipeline</button>
+          <button class="btn-add" onclick="event.stopPropagation();deleteAgent('${a.id}','${a.name}')" style="border-color:var(--red);color:var(--red);">✕</button>
         </div>
       </div>
-    `;
+    </div>`;
   }).join('');
 }
 
-// ── Modal ──────────────────────────────────────────────────────────
-function openModal(id) {
-  const a = allAgents.find(x => x.id === id);
-  if (!a) return;
-  currentAgent = a;
-  const trust = (a.trust_score || 0.7) * 100;
-  const isVerified = VERIFIED_IDS.has(a.id);
-  const workspace = getWorkspace();
-  const isSaved = workspace.some(w => w.id === a.id);
-
-  document.getElementById('modal-name').textContent = a.name;
-  document.getElementById('modal-verified').style.display = isVerified ? 'inline-flex' : 'none';
-  document.getElementById('modal-author').textContent = `v${a.version || '1.0'} · by ${a.author || 'unknown'}`;
-  document.getElementById('modal-stars').innerHTML = trustToStars(a.trust_score || 0.7);
-  document.getElementById('modal-desc').textContent = a.description;
-  document.getElementById('modal-trust').textContent = trust.toFixed(0) + '%';
-  document.getElementById('modal-runs').textContent = a.total_runs || 0;
-  document.getElementById('modal-latency').textContent = a.avg_latency_ms ? Math.round(a.avg_latency_ms) + 'ms' : '—';
-
-  const tags = Array.isArray(a.tags) ? a.tags : [];
-  document.getElementById('modal-tags').innerHTML = tags.map(t => `<span class="tag">${t}</span>`).join('');
-
-  // Save button state
-  const saveBtn = document.getElementById('modal-save-btn');
-  saveBtn.textContent = isSaved ? '♥ Saved' : '♡ Save';
-  saveBtn.className = `btn-save ${isSaved ? 'saved' : ''}`;
-
-  // Example prompts
-  const prompts = EXAMPLE_PROMPTS[a.id] || [];
-  const promptsEl = document.getElementById('modal-prompts');
-  const chipsEl = document.getElementById('modal-prompt-chips');
-  if (prompts.length) {
-    promptsEl.style.display = 'block';
-    chipsEl.innerHTML = prompts.map(p =>
-      `<div class="prompt-chip" onclick="usePrompt(this)" title="${p}">${p.slice(0,48)}${p.length>48?'…':''}</div>`
-    ).join('');
-  } else {
-    promptsEl.style.display = 'none';
-  }
-
-  document.getElementById('modal-test-input').value = '';
-  document.getElementById('modal-output').textContent = '';
-  document.getElementById('modal-terminal').style.display = 'none';
-  document.getElementById('modal-overlay').style.display = 'flex';
+function switchModalTab(tab){
+  ['test','history','info'].forEach(t=>{
+    document.getElementById(`mtab-${t}`).classList.toggle('active',t===tab);
+    document.getElementById(`mpanel-${t}`).classList.toggle('active',t===tab);
+  });
+  if(tab==='history'&&currentAgent) loadHistory(currentAgent.id);
+  if(tab==='info'&&currentAgent) loadInfo(currentAgent);
 }
 
-function usePrompt(el) {
-  // Get full text from title attr
-  document.getElementById('modal-test-input').value = el.title || el.textContent;
+async function openModal(id){
+  const a=allAgents.find(x=>x.id===id);
+  if(!a) return;
+  currentAgent=a;
+  const trust=(a.trust_score||0.7)*100;
+  const isPaid=parseFloat(a.price_per_run||0)>0;
+  const ws=getWorkspace();
+  const isSaved=ws.some(w=>w.id===a.id);
+
+  document.getElementById('modal-name').textContent=a.name;
+  document.getElementById('modal-verified').style.display=VERIFIED_IDS.has(a.id)?'inline-flex':'none';
+  document.getElementById('modal-author').textContent=`v${a.version||'1.0'} · by ${a.author||'unknown'}`;
+  document.getElementById('modal-stars').innerHTML=trustToStars(a.trust_score||0.7);
+  document.getElementById('modal-desc').textContent=a.description;
+  document.getElementById('modal-trust').textContent=trust.toFixed(0)+'%';
+  document.getElementById('modal-runs').textContent=a.total_runs||0;
+  document.getElementById('modal-latency').textContent=a.avg_latency_ms?Math.round(a.avg_latency_ms)+'ms':'—';
+
+  const pb=document.getElementById('modal-price-badge');
+  pb.textContent=isPaid?`₹${parseFloat(a.price_per_run)}/run`:'Free';
+  pb.className=`price-badge ${isPaid?'price-paid':'price-free'}`;
+
+  document.getElementById('subscribe-cta').style.display=isPaid?'block':'none';
+  document.getElementById('modal-run-btn').style.display=isPaid?'none':'inline-flex';
+
+  // Revenue
+  try{const rr=await fetch(`/api/agents/${id}/revenue`);const rd=await rr.json();document.getElementById('modal-revenue').textContent='₹'+rd.estimated_revenue.toFixed(2);}
+  catch(e){document.getElementById('modal-revenue').textContent='₹0';}
+
+  // Save btn
+  const sb=document.getElementById('modal-save-btn');
+  sb.textContent=isSaved?'♥ Saved':'♡ Save';
+  sb.className=`btn-save ${isSaved?'saved':''}`;
+
+  // Tags
+  const tags=Array.isArray(a.tags)?a.tags:[];
+  document.getElementById('modal-tags').innerHTML=tags.map(t=>`<span class="tag">${t}</span>`).join('');
+
+  // Prompts
+  const prompts=EXAMPLE_PROMPTS[a.id]||[];
+  const pe=document.getElementById('modal-prompts');
+  if(prompts.length){
+    pe.style.display='block';
+    document.getElementById('modal-prompt-chips').innerHTML=prompts.map(p=>`<div class="prompt-chip" onclick="usePrompt(this)" title="${p}">${p.slice(0,48)}${p.length>48?'…':''}</div>`).join('');
+  } else pe.style.display='none';
+
+  // Versions
+  try{
+    const vr=await fetch(`/api/agents/${id}/versions`);const vd=await vr.json();
+    const vs=document.getElementById('modal-version-select');
+    if(vd.versions&&vd.versions.length){
+      vs.style.display='block';
+      vs.innerHTML=`<option value="current">current</option>`+vd.versions.map(v=>`<option value="${v.version}">${v.version} (${(v.created_at||'').slice(0,10)})</option>`).join('');
+    } else vs.style.display='none';
+  }catch(e){document.getElementById('modal-version-select').style.display='none';}
+
+  document.getElementById('modal-test-input').value='';
+  document.getElementById('modal-output').textContent='';
+  document.getElementById('modal-terminal').style.display='none';
+  document.getElementById('input-warning').classList.remove('visible');
+  switchModalTab('test');
+  document.getElementById('modal-overlay').style.display='flex';
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').style.display = 'none';
-  currentAgent = null;
+function onVersionChange(v){if(v!=='current')toast(`Version ${v} archived on disk. Current version is active.`,'');}
+
+async function loadHistory(agentId){
+  const el=document.getElementById('history-list');
+  el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:12px 0;">Loading...</div>';
+  try{
+    const r=await fetch(`/api/agents/${agentId}/history?limit=10`);
+    const d=await r.json();
+    if(!d.history||!d.history.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:20px 0;">No runs yet.</div>';return;}
+    el.innerHTML=d.history.map(h=>`<div class="history-row">
+      <div class="history-input">▶ ${(h.input_text||'').slice(0,80)}${(h.input_text||'').length>80?'…':''}</div>
+      <div class="history-output">${(h.output_text||'').slice(0,200)}</div>
+      <div class="history-meta">${h.success?'✓':'✗'} · ${Math.round(h.latency_ms||0)}ms · ${h.created_at||''}</div>
+    </div>`).join('');
+  }catch(e){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--red);">Failed to load.</div>';}
 }
 
-// ── Test agent ─────────────────────────────────────────────────────
-async function testAgent() {
-  if (!currentAgent) return;
-  const input = document.getElementById('modal-test-input').value.trim();
-  if (!input) { toast('Enter some input first', 'error'); return; }
+function loadInfo(a){
+  document.getElementById('info-max-length').textContent=`Max: ${(a.input_max_length||10000).toLocaleString()} chars`;
+  document.getElementById('info-format').textContent=`Format: ${a.input_format_hint||'any text'}`;
+  const p=parseFloat(a.price_per_run||0);
+  document.getElementById('info-pricing').textContent=p>0?`₹${p} per run`:'Free';
+  document.getElementById('info-revenue-detail').textContent=p>0?`Est. ₹${((a.total_runs||0)*p).toFixed(2)} earned`:'';
+  document.getElementById('info-io').textContent=`${a.input_type||'text'} → ${a.output_type||'text'}`;
+}
 
-  const terminal = document.getElementById('modal-terminal');
-  const output = document.getElementById('modal-output');
-  const btn = document.getElementById('modal-run-btn');
-  const titleEl = document.getElementById('modal-terminal-title');
+function closeModal(){document.getElementById('modal-overlay').style.display='none';currentAgent=null;}
 
-  terminal.style.display = 'block';
-  output.textContent = '';
-  output.innerHTML = '<span class="t-prompt">$ </span><span class="t-meta">running ' + currentAgent.name + '...</span>\n\n';
-  titleEl.textContent = currentAgent.id;
-  btn.disabled = true; btn.textContent = '● Running';
+function showSubscribeModal(){
+  if(!currentAgent) return;
+  document.getElementById('sub-name').textContent=currentAgent.name;
+  document.getElementById('sub-price').textContent=`₹${parseFloat(currentAgent.price_per_run||0)}/run`;
+  document.getElementById('sub-overlay').style.display='flex';
+}
 
-  try {
-    const resp = await fetch(`${API}/api/agent/run`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ agent_ids: [currentAgent.id], input_text: input })
-    });
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        try {
-          const ev = JSON.parse(line.slice(6));
-          if (ev.type === 'token') {
-            const span = document.createElement('span');
-            span.textContent = ev.content;
-            output.appendChild(span);
-            output.scrollTop = output.scrollHeight;
-          }
-        } catch(e) {}
+function onInputChange(){
+  if(!currentAgent) return;
+  const text=document.getElementById('modal-test-input').value;
+  const max=currentAgent.input_max_length||10000;
+  const w=document.getElementById('input-warning');
+  if(text.length>max){w.textContent=`⚠ Too long: ${text.length}/${max} chars`;w.classList.add('visible');}
+  else w.classList.remove('visible');
+}
+
+function usePrompt(el){document.getElementById('modal-test-input').value=el.title||el.textContent;}
+
+async function testAgent(){
+  if(!currentAgent) return;
+  const input=document.getElementById('modal-test-input').value.trim();
+  if(!input){toast('Enter some input first','error');return;}
+  const max=currentAgent.input_max_length||10000;
+  if(input.length>max){toast(`Input too long (max ${max} chars)`,'error');return;}
+
+  const terminal=document.getElementById('modal-terminal'),output=document.getElementById('modal-output');
+  const btn=document.getElementById('modal-run-btn');
+  terminal.style.display='block';output.textContent='';
+  output.innerHTML=`<span class="t-prompt">$ </span><span class="t-meta">running ${currentAgent.name}...</span>\n\n`;
+  document.getElementById('modal-terminal-title').textContent=currentAgent.id;
+  btn.disabled=true;btn.textContent='● Running';
+  try{
+    const resp=await fetch('/api/agent/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agent_ids:[currentAgent.id],input_text:input})});
+    const reader=resp.body.getReader();const decoder=new TextDecoder();let buffer='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buffer+=decoder.decode(value,{stream:true});
+      const lines=buffer.split('\n');buffer=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        try{const ev=JSON.parse(line.slice(6));if(ev.type==='token'){const s=document.createElement('span');s.textContent=ev.content;output.appendChild(s);output.scrollTop=output.scrollHeight;}}catch(e){}
       }
     }
-    loadStats();
-    loadAgents(document.getElementById('search-input').value);
-  } catch(err) {
-    output.textContent += `\n[FETCH ERROR] ${err.message}`;
-  } finally {
-    btn.disabled = false; btn.textContent = '▶ Run Agent';
-  }
+    loadStats();loadAgents(document.getElementById('search-input').value);
+  }catch(err){output.textContent+=`\n[ERROR] ${err.message}`;}
+  finally{btn.disabled=false;btn.textContent='▶ Run Agent';}
 }
 
-// ── Pipeline ───────────────────────────────────────────────────────
-function addToBuilder() {
-  if (!currentAgent) return;
-  addToPipelineById(currentAgent.id, currentAgent.name);
-  closeModal();
+function addToBuilder(){if(!currentAgent)return;addToPipelineById(currentAgent.id,currentAgent.name);closeModal();}
+function addToPipelineById(id,name){
+  let p=JSON.parse(sessionStorage.getItem('pipeline')||'[]');
+  if(p.find(a=>a.id===id)){toast(`${name} already in pipeline`,'error');return;}
+  p.push({id,name});sessionStorage.setItem('pipeline',JSON.stringify(p));toast(`${name} added ✓`,'success');
 }
 
-function addToPipelineById(id, name) {
-  let pipeline = JSON.parse(sessionStorage.getItem('pipeline') || '[]');
-  if (pipeline.find(a => a.id === id)) { toast(`${name} already in pipeline`, 'error'); return; }
-  pipeline.push({ id, name });
-  sessionStorage.setItem('pipeline', JSON.stringify(pipeline));
-  toast(`${name} added to pipeline ✓`, 'success');
-}
+function getWorkspace(){try{return JSON.parse(sessionStorage.getItem('workspace')||'[]');}catch{return[];}}
+function saveWorkspace(ws){sessionStorage.setItem('workspace',JSON.stringify(ws));const c=ws.length;document.getElementById('workspace-count').textContent=c;document.getElementById('workspace-bar').classList.toggle('visible',c>0);}
+function toggleSave(){if(!currentAgent)return;toggleSaveById(currentAgent.id,currentAgent.name,document.getElementById('modal-save-btn'));const ws=getWorkspace();const is=ws.some(w=>w.id===currentAgent.id);const btn=document.getElementById('modal-save-btn');btn.textContent=is?'♥ Saved':'♡ Save';btn.className=`btn-save ${is?'saved':''}`;}
+function toggleSaveById(id,name,btnEl){let ws=getWorkspace();const idx=ws.findIndex(w=>w.id===id);if(idx>=0){ws.splice(idx,1);if(btnEl){btnEl.textContent='♡';btnEl.classList.remove('saved');}toast(`${name} removed`,'');}else{ws.push({id,name});if(btnEl){btnEl.textContent='♥';btnEl.classList.add('saved');}toast(`${name} saved ✓`,'success');}saveWorkspace(ws);applySection(allAgents);}
+function openWorkspace(){const ws=getWorkspace();if(!ws.length){toast('Workspace empty','');return;}toast(`Saved: ${ws.map(w=>w.name).join(', ')}`,'success');}
+function clearWorkspace(){saveWorkspace([]);applySection(allAgents);toast('Workspace cleared','');}
 
-// ── Workspace (save) ───────────────────────────────────────────────
-function getWorkspace() {
-  try { return JSON.parse(sessionStorage.getItem('workspace') || '[]'); } catch { return []; }
-}
+async function deleteAgent(id,name){if(!confirm(`Remove "${name}"?`))return;const r=await fetch(`/api/agents/${id}`,{method:'DELETE'});const d=await r.json();if(d.success){toast(`${name} removed`,'success');loadAgents(document.getElementById('search-input').value);loadStats();}else toast('Delete failed','error');}
 
-function saveWorkspace(ws) {
-  sessionStorage.setItem('workspace', JSON.stringify(ws));
-  const count = ws.length;
-  document.getElementById('workspace-count').textContent = count;
-  document.getElementById('workspace-bar').classList.toggle('visible', count > 0);
-}
+function toast(msg,type=''){const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),3000);}
 
-function toggleSave() {
-  if (!currentAgent) return;
-  toggleSaveById(currentAgent.id, currentAgent.name, document.getElementById('modal-save-btn'));
-  // re-render modal save state
-  const ws = getWorkspace();
-  const isSaved = ws.some(w => w.id === currentAgent.id);
-  const btn = document.getElementById('modal-save-btn');
-  btn.textContent = isSaved ? '♥ Saved' : '♡ Save';
-  btn.className = `btn-save ${isSaved ? 'saved' : ''}`;
-}
+document.getElementById('search-input').addEventListener('input',e=>{clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>loadAgents(e.target.value.trim()),300);});
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
+document.getElementById('sub-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('sub-overlay'))document.getElementById('sub-overlay').style.display='none';});
 
-function toggleSaveById(id, name, btnEl) {
-  let ws = getWorkspace();
-  const idx = ws.findIndex(w => w.id === id);
-  if (idx >= 0) {
-    ws.splice(idx, 1);
-    if (btnEl) { btnEl.textContent = '♡'; btnEl.classList.remove('saved'); }
-    toast(`${name} removed from workspace`, '');
-  } else {
-    ws.push({ id, name });
-    if (btnEl) { btnEl.textContent = '♥'; btnEl.classList.add('saved'); }
-    toast(`${name} saved to workspace ✓`, 'success');
-  }
-  saveWorkspace(ws);
-  // re-render cards to reflect save state
-  applySection(allAgents);
-}
-
-function openWorkspace() {
-  const ws = getWorkspace();
-  if (!ws.length) { toast('Workspace is empty', ''); return; }
-  toast(`Saved: ${ws.map(w => w.name).join(', ')}`, 'success');
-}
-
-function clearWorkspace() {
-  saveWorkspace([]);
-  applySection(allAgents);
-  toast('Workspace cleared', '');
-}
-
-// ── Delete ─────────────────────────────────────────────────────────
-async function deleteAgent(id, name) {
-  if (!confirm(`Remove "${name}" from marketplace?`)) return;
-  const r = await fetch(`/api/agents/${id}`, { method: 'DELETE' });
-  const d = await r.json();
-  if (d.success) {
-    toast(`${name} removed`, 'success');
-    loadAgents(document.getElementById('search-input').value);
-    loadStats();
-  } else {
-    toast('Delete failed', 'error');
-  }
-}
-
-// ── Toast ──────────────────────────────────────────────────────────
-function toast(msg, type = '') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
-
-// ── Search ─────────────────────────────────────────────────────────
-document.getElementById('search-input').addEventListener('input', e => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => loadAgents(e.target.value.trim()), 300);
-});
-
-document.getElementById('modal-overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-});
-
-// ── Init ───────────────────────────────────────────────────────────
-loadStats();
-loadAgents();
-// restore workspace bar
-const _ws = getWorkspace();
-if (_ws.length) {
-  document.getElementById('workspace-count').textContent = _ws.length;
-  document.getElementById('workspace-bar').classList.add('visible');
-}
+loadStats();loadAgents();
+const _ws=getWorkspace();if(_ws.length){document.getElementById('workspace-count').textContent=_ws.length;document.getElementById('workspace-bar').classList.add('visible');}
 </script>
 </body>
 </html>

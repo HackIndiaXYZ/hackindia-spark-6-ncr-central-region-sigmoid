@@ -1,0 +1,26 @@
+{
+  "id": "json-data-analyzer-v1",
+  "name": "JSON Data Analyzer",
+  "description": "Analyzes any JSON \u2014 detects types, computes numeric stats (mean/min/max/std), lists all key paths, identifies array structure. Send raw JSON as input",
+  "author": "Rehaan",
+  "version": "1.0",
+  "tags": [
+    "text",
+    "analysis",
+    "data",
+    "extraction"
+  ],
+  "input": {
+    "type": "json"
+  },
+  "output": {
+    "type": "text"
+  },
+  "entry": "agent.py",
+  "pricing_model": "pay-per-use",
+  "price_per_run": 2,
+  "input_max_length": 10000,
+  "input_regex": "",
+  "input_format_hint": "",
+  "a2a_compatible": 1
+}

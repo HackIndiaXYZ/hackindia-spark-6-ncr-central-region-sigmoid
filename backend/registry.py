@@ -27,11 +27,22 @@ def register_agent(manifest: dict) -> dict:
     with open(manifest_path, "w") as f:
         json.dump(manifest, f, indent=2)
 
+    pricing = manifest.get("pricing", {})
+    pricing_model = pricing.get("model", manifest.get("pricing_model", "free"))
+    price_per_run = float(pricing.get("price_per_run", manifest.get("price_per_run", 0.0)))
+
+    validation = manifest.get("validation", {})
+    input_max_length = int(validation.get("max_length", manifest.get("input_max_length", 10000)))
+    input_regex = validation.get("regex", manifest.get("input_regex", ""))
+    input_format_hint = validation.get("format_hint", manifest.get("input_format_hint", ""))
+
     conn = get_db()
     conn.execute("""
         INSERT OR REPLACE INTO agents
-        (id, name, description, author, version, tags, input_type, output_type, entry, manifest_path, trust_score)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, name, description, author, version, tags, input_type, output_type, entry,
+         manifest_path, trust_score, pricing_model, price_per_run,
+         input_max_length, input_regex, input_format_hint, a2a_compatible)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
     """, (
         agent_id,
         manifest.get("name", "Unnamed Agent"),
@@ -43,7 +54,12 @@ def register_agent(manifest: dict) -> dict:
         manifest.get("output", {}).get("type", "text"),
         manifest.get("entry", "agent.py"),
         manifest_path,
-        0.7
+        0.7,
+        pricing_model,
+        price_per_run,
+        input_max_length,
+        input_regex,
+        input_format_hint,
     ))
     conn.commit()
     conn.close()
@@ -60,7 +76,9 @@ def seed_demo_agents():
             "tags": ["NLP", "text", "summarization", "highlights"],
             "input": {"type": "text", "max_length": 10000},
             "output": {"type": "text"},
-            "entry": "agent.py"
+            "entry": "agent.py",
+            "pricing_model": "free",
+            "price_per_run": 0.0,
         },
         {
             "id": "code-explainer-v1",
@@ -71,7 +89,9 @@ def seed_demo_agents():
             "tags": ["code", "explanation", "developer", "education"],
             "input": {"type": "text", "max_length": 5000},
             "output": {"type": "text"},
-            "entry": "agent.py"
+            "entry": "agent.py",
+            "pricing_model": "free",
+            "price_per_run": 0.0,
         },
         {
             "id": "web-scraper-v1",
@@ -82,7 +102,9 @@ def seed_demo_agents():
             "tags": ["web", "scraping", "extraction", "data"],
             "input": {"type": "url"},
             "output": {"type": "text"},
-            "entry": "agent.py"
+            "entry": "agent.py",
+            "pricing_model": "free",
+            "price_per_run": 0.0,
         },
         {
             "id": "email-drafter-v1",
@@ -93,7 +115,9 @@ def seed_demo_agents():
             "tags": ["email", "writing", "professional", "communication"],
             "input": {"type": "text", "max_length": 5000},
             "output": {"type": "text"},
-            "entry": "agent.py"
+            "entry": "agent.py",
+            "pricing_model": "free",
+            "price_per_run": 0.0,
         },
     ]
     for d in demos:

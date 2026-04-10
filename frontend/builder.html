@@ -37,29 +37,11 @@
       transition: border-color 0.15s, box-shadow 0.15s;
       user-select: none;
     }
-    .sidebar-agent:hover {
-      border-color: var(--green3);
-      box-shadow: var(--glow);
-    }
+    .sidebar-agent:hover { border-color: var(--green3); box-shadow: var(--glow); }
     .sidebar-agent:active { cursor: grabbing; }
-    .s-name {
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 4px;
-    }
-    .s-desc {
-      font-size: 11px;
-      color: var(--text3);
-      line-height: 1.5;
-    }
-    .s-io {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text3);
-      margin-top: 6px;
-    }
+    .s-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .s-desc { font-size: 11px; color: var(--text3); line-height: 1.5; }
+    .s-io { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 6px; }
 
     .main-panel {
       display: flex;
@@ -68,6 +50,38 @@
       gap: 20px;
       overflow-y: auto;
     }
+
+    /* Templates bar */
+    .templates-bar {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .templates-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .template-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .template-btn:hover { border-color: var(--green3); color: var(--green); background: rgba(0,255,136,0.04); }
 
     /* Pipeline canvas */
     .pipeline-canvas {
@@ -79,18 +93,12 @@
       display: flex;
       align-items: center;
       gap: 0;
-      
       overflow: visible;
       position: relative;
       transition: border-color 0.2s;
     }
-    .pipeline-canvas.drag-over {
-      border-color: var(--green3);
-      box-shadow: var(--glow);
-    }
-    .pipeline-canvas.empty-canvas {
-      justify-content: center;
-    }
+    .pipeline-canvas.drag-over { border-color: var(--green3); box-shadow: var(--glow); }
+    .pipeline-canvas.empty-canvas { justify-content: center; }
     .drop-hint {
       font-family: var(--mono);
       font-size: 12px;
@@ -112,39 +120,14 @@
       cursor: default;
       transition: border-color 0.15s;
     }
-    .pipeline-node.running {
-      border-color: var(--amber);
-      box-shadow: 0 0 12px rgba(255,170,0,0.2);
-    }
-    .pipeline-node.done {
-      border-color: var(--green3);
-      box-shadow: 0 0 12px rgba(0,255,136,0.1);
-    }
+    .pipeline-node.running { border-color: var(--amber); box-shadow: 0 0 12px rgba(255,170,0,0.2); }
+    .pipeline-node.done { border-color: var(--green3); box-shadow: 0 0 12px rgba(0,255,136,0.1); }
     .pipeline-node.error { border-color: var(--red); }
 
-    .node-step {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text3);
-      margin-bottom: 4px;
-    }
-    .node-name {
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--green);
-      margin-bottom: 2px;
-    }
-    .node-io {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text3);
-    }
-    .node-status {
-      position: absolute;
-      top: 8px; right: 8px;
-      font-size: 10px;
-    }
+    .node-step { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+    .node-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 2px; }
+    .node-io { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+    .node-status { position: absolute; top: 8px; right: 8px; font-size: 10px; }
     .node-remove {
       position: absolute;
       top: -8px; right: -8px;
@@ -174,132 +157,30 @@
       font-size: 16px;
     }
 
-    /* Controls */
-    .controls-bar {
-      display: flex;
-      align-items: flex-end;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .controls-bar { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
     .controls-bar .form-group { margin: 0; flex: 1; min-width: 200px; }
 
-    /* Step outputs */
     .steps-output { display: flex; flex-direction: column; gap: 16px; }
-    .step-block {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: none;
-    }
+    .step-block { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: none; }
     .step-block.visible { display: block; }
-    .step-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      background: var(--bg3);
-      border-bottom: 1px solid var(--border);
-    }
-    .step-header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .step-num {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text3);
-    }
-    .step-name {
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--amber);
-    }
-    .step-badge {
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 3px;
-    }
+    .step-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: var(--bg3); border-bottom: 1px solid var(--border); }
+    .step-header-left { display: flex; align-items: center; gap: 10px; }
+    .step-num { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+    .step-name { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--amber); }
+    .step-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 3px; }
     .step-badge.running { background: rgba(255,170,0,0.1); color: var(--amber); border: 1px solid #aa6600; }
-    .step-badge.done    { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid var(--green3); }
-    .step-badge.error   { background: rgba(255,68,85,0.08); color: var(--red); border: 1px solid var(--red); }
-    .step-content {
-      padding: 14px 16px;
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--text);
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 300px;
-      overflow-y: auto;
-      line-height: 1.7;
-    }
-    .step-latency {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text3);
-    }
+    .step-badge.done { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid var(--green3); }
+    .step-badge.error { background: rgba(255,68,85,0.08); color: var(--red); border: 1px solid var(--red); }
+    .step-content { padding: 14px 16px; font-family: var(--mono); font-size: 13px; color: var(--text); white-space: pre-wrap; word-break: break-word; max-height: 300px; overflow-y: auto; line-height: 1.7; }
+    .step-latency { font-family: var(--mono); font-size: 10px; color: var(--text3); }
 
-    /* Export modal */
-    .export-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
-    .export-box {
-      background: var(--bg2);
-      border: 1px solid var(--border2);
-      border-radius: 8px;
-      width: min(700px, 95vw);
-      max-height: 85vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    .export-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-    }
-    .export-content {
-      overflow-y: auto;
-      padding: 20px 24px;
-    }
-    .code-block {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text2);
-      white-space: pre;
-      overflow: visible;
-      line-height: 1.6;
-      max-height: 300px;
-      overflow-y: auto;
-    }
+    .export-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; }
+    .export-box { background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px; width: min(700px,95vw); max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+    .export-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .export-content { overflow-y: auto; padding: 20px 24px; }
+    .code-block { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; font-family: var(--mono); font-size: 12px; color: var(--text2); white-space: pre; overflow: visible; line-height: 1.6; max-height: 300px; overflow-y: auto; }
 
-    .sidebar-search {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 8px 12px;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text);
-      width: 100%;
-      outline: none;
-      margin-bottom: 8px;
-    }
+    .sidebar-search { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; font-family: var(--mono); font-size: 12px; color: var(--text); width: 100%; outline: none; margin-bottom: 8px; }
     .sidebar-search:focus { border-color: var(--green3); }
     .sidebar-search::placeholder { color: var(--text3); }
   </style>
@@ -307,9 +188,7 @@
 <body>
 
 <nav class="topbar">
-  <a class="logo" href="/">
-    <span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span>
-  </a>
+  <a class="logo" href="/"><span class="logo-bracket">[</span>AgentForge<span class="logo-bracket">]</span></a>
   <div class="nav">
     <a href="/">Marketplace</a>
     <a href="/builder" class="active">Pipeline Builder</a>
@@ -335,10 +214,20 @@
   <!-- Main panel -->
   <div class="main-panel">
 
-    <!-- Pipeline canvas label -->
+    <!-- Templates bar -->
+    <div class="templates-bar">
+      <span class="templates-label">Templates:</span>
+      <button class="template-btn" onclick="loadTemplate('research-email')">📧 Research to Email</button>
+      <button class="template-btn" onclick="loadTemplate('scrape-analyse')">🔍 Scrape & Analyse</button>
+      <button class="template-btn" onclick="loadTemplate('summarize-draft')">✍ Summarize & Draft</button>
+      <button class="template-btn" onclick="loadTemplate('full-pipeline')">⚡ Full Pipeline</button>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:auto;">one-click load →</span>
+    </div>
+
+    <!-- Pipeline canvas -->
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div class="section-title">Pipeline Canvas</div>
+        <div class="section-title">// Pipeline Canvas</div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-ghost" onclick="clearPipeline()" style="font-size:12px;padding:6px 12px;">Clear</button>
           <button class="btn btn-secondary" onclick="openExport()" id="export-btn" style="font-size:12px;padding:6px 12px;" disabled>Export ↗</button>
@@ -351,7 +240,7 @@
            ondrop="onDrop(event)">
         <div class="drop-hint" id="drop-hint">
           ← drag agents here to build a pipeline<br/>
-          <span>or click + Pipeline on any agent card</span>
+          <span>or click a template above · or click + Pipeline on any agent card</span>
         </div>
       </div>
     </div>
@@ -367,16 +256,14 @@
           placeholder="Enter input for the first agent in your pipeline..."></textarea>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;">
-        <button class="btn btn-primary" id="run-btn" onclick="runPipeline()" disabled>
-          ▶ Run Pipeline
-        </button>
+        <button class="btn btn-primary" id="run-btn" onclick="runPipeline()" disabled>▶ Run Pipeline</button>
         <div style="font-family:var(--mono);font-size:10px;color:var(--text3);text-align:center;" id="run-status"></div>
       </div>
     </div>
 
     <!-- Step outputs -->
     <div>
-      <div class="section-title" style="margin-bottom:12px;">Output Stream</div>
+      <div class="section-title" style="margin-bottom:12px;">// Output Stream</div>
       <div class="steps-output" id="steps-output">
         <div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:20px;text-align:center;">
           // build a pipeline and run it to see output here
@@ -422,13 +309,54 @@
 
 <script>
 const API = '';
-let pipeline = [];       // [{id, name, input_type, output_type}]
+let pipeline = [];
 let allAgents = [];
 let dragAgent = null;
 let exportData = null;
 let isRunning = false;
 
-// ── Load sidebar agents ──────────────────────────────────────────
+//  Pipeline templates 
+const PIPELINE_TEMPLATES = {
+  'research-email': [
+    {id:'web-scraper-v1', name:'Web Scraper', input_type:'url', output_type:'text'},
+    {id:'summarizer-v1', name:'Text Summarizer', input_type:'text', output_type:'text'},
+    {id:'email-drafter-v1', name:'Email Drafter', input_type:'text', output_type:'text'}
+  ],
+  'scrape-analyse': [
+    {id:'web-scraper-v1', name:'Web Scraper', input_type:'url', output_type:'text'},
+    {id:'tfidf-extractor-v1', name:'TF-IDF Keyword Extractor', input_type:'text', output_type:'text'}
+  ],
+  'summarize-draft': [
+    {id:'summarizer-v1', name:'Text Summarizer', input_type:'text', output_type:'text'},
+    {id:'email-drafter-v1', name:'Email Drafter', input_type:'text', output_type:'text'}
+  ],
+  'full-pipeline': [
+    {id:'web-scraper-v1', name:'Web Scraper', input_type:'url', output_type:'text'},
+    {id:'summarizer-v1', name:'Text Summarizer', input_type:'text', output_type:'text'},
+    {id:'email-drafter-v1', name:'Email Drafter', input_type:'text', output_type:'text'}
+  ],
+};
+
+const TEMPLATE_INPUTS = {
+  'research-email': 'https://en.wikipedia.org/wiki/Artificial_intelligence',
+  'scrape-analyse': 'https://en.wikipedia.org/wiki/Machine_learning',
+  'summarize-draft': 'The Transformer architecture introduced in 2017 revolutionized NLP by replacing recurrent networks with self-attention mechanisms, enabling parallel training and better long-range dependency modeling.',
+  'full-pipeline': 'https://en.wikipedia.org/wiki/Large_language_model',
+};
+
+function loadTemplate(name) {
+  const agents = PIPELINE_TEMPLATES[name];
+  if (!agents) return;
+  pipeline = [...agents];
+  renderCanvas();
+  validatePipeline();
+  // Pre-fill input
+  const inputEl = document.getElementById('pipeline-input');
+  if (inputEl && TEMPLATE_INPUTS[name]) inputEl.value = TEMPLATE_INPUTS[name];
+  toast(`Template loaded: ${name.replace(/-/g,' ')} ✓`, 'success');
+}
+
+//  Load sidebar agents 
 async function loadSidebarAgents(filter = '') {
   const container = document.getElementById('sidebar-agents');
   try {
@@ -455,61 +383,33 @@ function renderSidebar(agents) {
          onclick="addAgent('${a.id}')">
       <div class="s-name">${a.name}</div>
       <div class="s-desc">${a.description.slice(0,80)}...</div>
-      <div class="s-io">${a.input_type || 'text'} → ${a.output_type || 'text'} · ⬡ ${((a.trust_score||0.5)*100).toFixed(0)}%</div>
+      <div class="s-io">${a.input_type||'text'} → ${a.output_type||'text'} · ⬡ ${((a.trust_score||0.5)*100).toFixed(0)}%</div>
     </div>
   `).join('');
 }
 
-// ── Drag and drop ────────────────────────────────────────────────
-function onDragStart(e, agentId) {
-  dragAgent = agentId;
-  e.dataTransfer.effectAllowed = 'copy';
-}
-
-function onDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'copy';
-  document.getElementById('pipeline-canvas').classList.add('drag-over');
-}
-
-function onDragLeave(e) {
-  document.getElementById('pipeline-canvas').classList.remove('drag-over');
-}
-
-function onDrop(e) {
-  e.preventDefault();
-  document.getElementById('pipeline-canvas').classList.remove('drag-over');
-  if (dragAgent) {
-    addAgent(dragAgent);
-    dragAgent = null;
-  }
-}
+//  Drag and drop 
+function onDragStart(e, agentId) { dragAgent = agentId; e.dataTransfer.effectAllowed = 'copy'; }
+function onDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; document.getElementById('pipeline-canvas').classList.add('drag-over'); }
+function onDragLeave(e) { document.getElementById('pipeline-canvas').classList.remove('drag-over'); }
+function onDrop(e) { e.preventDefault(); document.getElementById('pipeline-canvas').classList.remove('drag-over'); if (dragAgent) { addAgent(dragAgent); dragAgent = null; } }
 
 function addAgent(id) {
   const agent = allAgents.find(a => a.id === id);
   if (!agent) return;
-  if (pipeline.find(a => a.id === id)) {
-    toast(`${agent.name} already in pipeline`, 'error');
-    return;
-  }
+  if (pipeline.find(a => a.id === id)) { toast(`${agent.name} already in pipeline`, 'error'); return; }
   pipeline.push({ id: agent.id, name: agent.name, input_type: agent.input_type, output_type: agent.output_type });
   renderCanvas();
   validatePipeline();
 }
 
-function removeAgent(idx) {
-  pipeline.splice(idx, 1);
-  renderCanvas();
-  validatePipeline();
-}
+function removeAgent(idx) { pipeline.splice(idx, 1); renderCanvas(); validatePipeline(); }
 
 function clearPipeline() {
   pipeline = [];
   renderCanvas();
-  const so = document.getElementById('steps-output');
-  so.innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:20px;text-align:center;">// build a pipeline and run it to see output here</div>';
-  const msg = document.getElementById('validation-msg');
-  msg.style.display = 'none';
+  document.getElementById('steps-output').innerHTML = '<div style="font-family:var(--mono);font-size:12px;color:var(--text3);padding:20px;text-align:center;">// build a pipeline and run it to see output here</div>';
+  document.getElementById('validation-msg').style.display = 'none';
   document.getElementById('run-btn').disabled = true;
   document.getElementById('export-btn').disabled = true;
   document.getElementById('run-status').textContent = '';
@@ -517,11 +417,7 @@ function clearPipeline() {
 
 function renderCanvas() {
   const canvas = document.getElementById('pipeline-canvas');
-
-  // Clear everything except the hint div
-  Array.from(canvas.children).forEach(c => {
-    if (!c.id || c.id !== 'drop-hint') c.remove();
-  });
+  Array.from(canvas.children).forEach(c => { if (!c.id || c.id !== 'drop-hint') c.remove(); });
   const hint = document.getElementById('drop-hint');
 
   if (!pipeline.length) {
@@ -534,17 +430,15 @@ function renderCanvas() {
   hint.style.display = 'none';
 
   pipeline.forEach((a, i) => {
-    // Node
     const node = document.createElement('div');
     node.className = 'pipeline-node';
     node.id = `pnode-${i}`;
     node.innerHTML = `
       <div class="node-step">step ${i + 1}</div>
       <div class="node-name">${a.name}</div>
-      <div class="node-io">${a.input_type || 'text'} → ${a.output_type || 'text'}</div>
+      <div class="node-io">${a.input_type||'text'} → ${a.output_type||'text'}</div>
       <div class="node-status" id="pnode-status-${i}"></div>
     `;
-    // Remove button — created via DOM so onclick works
     const removeBtn = document.createElement('button');
     removeBtn.className = 'node-remove';
     removeBtn.textContent = '×';
@@ -552,7 +446,6 @@ function renderCanvas() {
     node.appendChild(removeBtn);
     canvas.appendChild(node);
 
-    // Arrow between nodes
     if (i < pipeline.length - 1) {
       const arrow = document.createElement('div');
       arrow.className = 'arrow-connector';
@@ -562,23 +455,17 @@ function renderCanvas() {
   });
 }
 
-// ── Validate pipeline ────────────────────────────────────────────
+//  Validate 
 async function validatePipeline() {
   const msg = document.getElementById('validation-msg');
   const runBtn = document.getElementById('run-btn');
   const exportBtn = document.getElementById('export-btn');
 
-  if (!pipeline.length) {
-    msg.style.display = 'none';
-    runBtn.disabled = true;
-    exportBtn.disabled = true;
-    return;
-  }
+  if (!pipeline.length) { msg.style.display='none'; runBtn.disabled=true; exportBtn.disabled=true; return; }
 
   try {
     const r = await fetch(`${API}/api/pipeline/validate`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ agent_ids: pipeline.map(a => a.id) })
     });
     const d = await r.json();
@@ -598,12 +485,10 @@ async function validatePipeline() {
       runBtn.disabled = true;
       exportBtn.disabled = true;
     }
-  } catch(e) {
-    runBtn.disabled = false;
-  }
+  } catch(e) { runBtn.disabled = false; }
 }
 
-// ── Run pipeline ─────────────────────────────────────────────────
+//  Run pipeline 
 async function runPipeline() {
   if (isRunning) return;
   const input = document.getElementById('pipeline-input').value.trim();
@@ -616,7 +501,6 @@ async function runPipeline() {
   runBtn.textContent = '● Running...';
   runBtn.disabled = true;
 
-  // Clear + init step blocks
   const stepsEl = document.getElementById('steps-output');
   stepsEl.innerHTML = '';
   pipeline.forEach((a, i) => {
@@ -637,17 +521,16 @@ async function runPipeline() {
     `);
   });
 
-  // Reset node states
   pipeline.forEach((_, i) => {
     const node = document.getElementById(`pnode-${i}`);
-    if (node) { node.classList.remove('running','done','error'); }
-    document.getElementById(`pnode-status-${i}`).textContent = '';
+    if (node) node.classList.remove('running','done','error');
+    const ns = document.getElementById(`pnode-status-${i}`);
+    if (ns) ns.textContent = '';
   });
 
   try {
     const resp = await fetch(`${API}/api/pipeline/run`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ agent_ids: pipeline.map(a => a.id), input_text: input })
     });
 
@@ -689,13 +572,14 @@ async function runPipeline() {
             if (lat) lat.textContent = `${ev.latency_ms}ms`;
             const node = document.getElementById(`pnode-${ev.step - 1}`);
             if (node) { node.classList.remove('running'); node.classList.add('done'); }
-            document.getElementById(`pnode-status-${ev.step - 1}`).textContent = '✓';
+            const ns = document.getElementById(`pnode-status-${ev.step - 1}`);
+            if (ns) ns.textContent = '✓';
           }
 
           if (ev.type === 'error') {
-            const badge = document.getElementById(`step-badge-${ev.step || currentStep}`);
+            const badge = document.getElementById(`step-badge-${ev.step||currentStep}`);
             if (badge) { badge.textContent = '✗ error'; badge.className = 'step-badge error'; }
-            const out = document.getElementById(`step-out-${ev.step || currentStep}`);
+            const out = document.getElementById(`step-out-${ev.step||currentStep}`);
             if (out) out.textContent += `\n[ERROR] ${ev.message}`;
             toast(`Step ${ev.step} error: ${ev.message}`, 'error');
           }
@@ -716,7 +600,7 @@ async function runPipeline() {
   }
 }
 
-// ── Export ───────────────────────────────────────────────────────
+//  Export 
 async function openExport() {
   if (!pipeline.length) return;
   document.getElementById('export-modal').style.display = 'flex';
@@ -725,31 +609,24 @@ async function openExport() {
   const name = document.getElementById('export-name').value || 'My Pipeline';
   try {
     const r = await fetch(`${API}/api/pipeline/export`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ agent_ids: pipeline.map(a => a.id), pipeline_name: name })
     });
     exportData = await r.json();
     document.getElementById('export-code').textContent = exportData.python_template || '';
-    const copy = {...exportData};
-    delete copy.python_template;
+    const copy = {...exportData}; delete copy.python_template;
     document.getElementById('export-json').textContent = JSON.stringify(copy, null, 2);
   } catch(e) {
     document.getElementById('export-code').textContent = `Error: ${e.message}`;
   }
 }
 
-function closeExport() {
-  document.getElementById('export-modal').style.display = 'none';
-}
+function closeExport() { document.getElementById('export-modal').style.display = 'none'; }
 
 function downloadExport() {
   if (!exportData) return;
   const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'pipeline_spec.json';
-  a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pipeline_spec.json'; a.click();
   toast('Downloaded pipeline_spec.json', 'success');
 }
 
@@ -759,14 +636,13 @@ function copyPython() {
   toast('Python template copied ✓', 'success');
 }
 
-// ── Session restore ──────────────────────────────────────────────
+//  Session restore 
 function restoreSessionPipeline() {
   const stored = JSON.parse(sessionStorage.getItem('pipeline') || '[]');
   if (stored.length) {
     stored.forEach(a => {
-      if (!pipeline.find(p => p.id === a.id)) {
+      if (!pipeline.find(p => p.id === a.id))
         pipeline.push({ id: a.id, name: a.name, input_type: 'text', output_type: 'text' });
-      }
     });
     sessionStorage.removeItem('pipeline');
     renderCanvas();
@@ -775,21 +651,16 @@ function restoreSessionPipeline() {
 }
 
 function toast(msg, type = '') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  const el = document.createElement('div'); el.className = `toast ${type}`; el.textContent = msg;
+  document.getElementById('toasts').appendChild(el); setTimeout(() => el.remove(), 3000);
 }
 
-// Search sidebar
 let sidebarTimeout;
 document.getElementById('sidebar-search').addEventListener('input', e => {
   clearTimeout(sidebarTimeout);
   sidebarTimeout = setTimeout(() => loadSidebarAgents(e.target.value.trim()), 300);
 });
 
-// Init
 loadSidebarAgents();
 restoreSessionPipeline();
 </script>

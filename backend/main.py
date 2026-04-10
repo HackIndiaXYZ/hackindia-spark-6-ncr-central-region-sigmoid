@@ -48,7 +48,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Static frontend ──────────────────────────────────────────────
+#  Static frontend 
 app.mount("/static", StaticFiles(directory=os.path.join(FRONTEND_DIR, "static")), name="static")
 
 @app.get("/", response_class=FileResponse)
@@ -63,7 +63,7 @@ async def serve_builder():
 async def serve_submit():
     return FileResponse(os.path.join(FRONTEND_DIR, "submit.html"))
 
-# ── Agent registry ───────────────────────────────────────────────
+#  Agent registry 
 @app.get("/api/agents")
 async def list_agents():
     agents = load_all_agents()
@@ -165,7 +165,7 @@ async def submit_agent(manifest: AgentManifest):
         print(f"[Search] Index update failed: {e}")
     return {"success": True, "agent": agent}
 
-# ── Search ───────────────────────────────────────────────────────
+#  Search 
 @app.get("/api/search")
 async def search_agents(q: str, n: int = 5):
     if not q.strip():
@@ -190,7 +190,7 @@ async def search_agents(q: str, n: int = 5):
         ]
         return {"agents": filtered or all_agents[:5], "query": q}
 
-# ── Pipeline ─────────────────────────────────────────────────────
+#  Pipeline 
 class PipelineRequest(BaseModel):
     agent_ids: List[str]
 
@@ -245,7 +245,7 @@ async def run_single_agent(req: RunRequest):
         headers={"Cache-Control": "no-cache"}
     )
 
-# ── Export ───────────────────────────────────────────────────────
+#  Export 
 class ExportRequest(BaseModel):
     agent_ids: List[str]
     pipeline_name: str = "My Pipeline"
@@ -255,7 +255,7 @@ async def export_pipeline(req: ExportRequest):
     spec = export_pipeline_json(req.agent_ids, req.pipeline_name)
     return spec
 
-# ── Stats / trust ────────────────────────────────────────────────
+#  Stats / trust 
 @app.get("/api/stats")
 async def platform_stats():
     from .db import get_db
@@ -289,7 +289,7 @@ async def get_analytics():
     return {"total_agents": total_agents, "total_runs": total_runs, "avg_trust": round(avg_trust, 3), "agents": [dict(a) for a in agents]}
 
 
-# ── Model upload routes — paste after /api/agents/fetch-github ──────
+#  Model upload routes — paste after /api/agents/fetch-github 
 
 class ValidateModelRequest(BaseModel):
     model_b64: str
@@ -512,12 +512,114 @@ async def submit_with_model(req: SubmitWithModelRequest):
 
     return {"success": True, "agent": agent}
 
+#  Run history 
+@app.get("/api/agents/{agent_id}/history")
+async def get_agent_history(agent_id: str, limit: int = 10):
+    from .db import get_db
+    conn = get_db()
+    rows = conn.execute("""
+        SELECT input_text, output_text, latency_ms, success, created_at
+        FROM execution_logs
+        WHERE agent_id = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+    """, (agent_id, limit)).fetchall()
+    conn.close()
+    return {"history": [dict(r) for r in rows]}
+
+#  Revenue 
+@app.get("/api/agents/{agent_id}/revenue")
+async def get_agent_revenue(agent_id: str):
+    agent = get_agent(agent_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    runs = agent.get("total_runs", 0) or 0
+    price = float(agent.get("price_per_run", 0) or 0)
+    return {
+        "agent_id": agent_id,
+        "pricing_model": agent.get("pricing_model", "free"),
+        "price_per_run": price,
+        "total_runs": runs,
+        "estimated_revenue": round(runs * price, 2)
+    }
+
+#  Platform revenue summary 
+@app.get("/api/revenue")
+async def platform_revenue():
+    from .db import get_db
+    conn = get_db()
+    agents = conn.execute(
+        "SELECT id, name, pricing_model, price_per_run, total_runs FROM agents"
+    ).fetchall()
+    conn.close()
+    total = 0.0
+    breakdown = []
+    for a in agents:
+        rev = (a["total_runs"] or 0) * float(a["price_per_run"] or 0)
+        total += rev
+        breakdown.append({
+            "id": a["id"], "name": a["name"],
+            "pricing_model": a["pricing_model"],
+            "price_per_run": float(a["price_per_run"] or 0),
+            "total_runs": a["total_runs"] or 0,
+            "revenue": round(rev, 2)
+        })
+    return {"total_revenue": round(total, 2), "breakdown": breakdown}
+
+#  Agent versions 
+@app.get("/api/agents/{agent_id}/versions")
+async def get_agent_versions(agent_id: str):
+    from .db import get_db
+    conn = get_db()
+    rows = conn.execute("""
+        SELECT version, file_path, created_at FROM agent_versions
+        WHERE agent_id = ? ORDER BY created_at DESC
+    """, (agent_id,)).fetchall()
+    conn.close()
+    return {"versions": [dict(r) for r in rows]}
+
+#  Input validation endpoint 
+class ValidateInputRequest(BaseModel):
+    agent_id: str
+    input_text: str
+
+@app.post("/api/agents/validate-input")
+async def validate_agent_input(req: ValidateInputRequest):
+    import re as _re
+    agent = get_agent(req.agent_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+
+    text = req.input_text
+    max_len = agent.get("input_max_length") or 10000
+    regex = agent.get("input_regex") or ""
+    fmt_hint = agent.get("input_format_hint") or ""
+
+    if len(text) > max_len:
+        return {
+            "valid": False,
+            "error": f"Input too long: {len(text)} chars (max {max_len})",
+            "hint": fmt_hint
+        }
+
+    if regex:
+        try:
+            if not _re.match(regex, text):
+                return {
+                    "valid": False,
+                    "error": f"Input format invalid",
+                    "hint": fmt_hint or f"Must match pattern: {regex}"
+                }
+        except Exception:
+            pass
+
+    return {"valid": True, "error": None, "hint": fmt_hint}
 
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "AgentForge"}
 
-# ── Agent code submission + validation ───────────────────────────
+#  Agent code submission + validation 
 class ValidateCodeRequest(BaseModel):
     code: str
     test_input: str = "Hello world. This is a test input."
@@ -561,12 +663,11 @@ async def validate_code(req: ValidateCodeRequest):
 
 @app.post("/api/agents/submit-with-code")
 async def submit_with_code(req: SubmitWithCodeRequest):
-    """Validate code, save agent.py to disk, register manifest."""
-    import subprocess, sys, tempfile, time
+    import subprocess, sys, tempfile, shutil
+    import json as _json
     code = req.code
     manifest = req.manifest
 
-    # Re-validate in sandbox
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as f:
         f.write(code)
         tmp_path = f.name
@@ -587,29 +688,41 @@ async def submit_with_code(req: SubmitWithCodeRequest):
         try: os.unlink(tmp_path)
         except: pass
 
-    # Determine agent folder name
     agent_id = manifest.get("id") or manifest.get("name","agent").lower().replace(" ","-") + "-v1"
     manifest["id"] = agent_id
     folder_name = agent_id.replace("-","_").replace(".","_")
     agent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "agents", folder_name))
     os.makedirs(agent_dir, exist_ok=True)
 
-    # Save agent.py
-    agent_py_path = os.path.join(agent_dir, "agent.py")
-    with open(agent_py_path, "w", encoding="utf-8") as f:
+    # Version history — archive current agent.py before overwriting
+    from .db import get_db as _get_db
+    conn = _get_db()
+    existing = conn.execute(
+        "SELECT COUNT(*) as cnt FROM agent_versions WHERE agent_id = ?", (agent_id,)
+    ).fetchone()
+    version_num = (existing["cnt"] or 0) + 1
+    version_str = manifest.get("version", f"1.{version_num}")
+    current_agent_py = os.path.join(agent_dir, "agent.py")
+    if os.path.exists(current_agent_py):
+        archived = os.path.join(agent_dir, f"agent_v{version_num}.py")
+        shutil.copy2(current_agent_py, archived)
+        conn.execute(
+            "INSERT INTO agent_versions (agent_id, version, file_path) VALUES (?, ?, ?)",
+            (agent_id, version_str, archived)
+        )
+    conn.commit()
+    conn.close()
+
+    with open(current_agent_py, "w", encoding="utf-8") as f:
         f.write(code)
 
-    # Save manifest.json
-    import json as _json
     manifest_path = os.path.join(agent_dir, "manifest.json")
     with open(manifest_path, "w", encoding="utf-8") as f:
         _json.dump(manifest, f, indent=2)
 
-    # ✅ FIX: use the proper registration function instead of mutating the imported dict
     from .executor import register_agent_module
     register_agent_module(agent_id, folder_name)
 
-    # Register in registry + search index
     agent = register_agent(manifest)
     try:
         tags = _json.dumps(manifest.get("tags", []))
@@ -617,8 +730,7 @@ async def submit_with_code(req: SubmitWithCodeRequest):
     except Exception as e:
         print(f"[Search] Index update failed: {e}")
 
-    return {"success": True, "agent": agent}
-
+    return {"success": True, "agent": agent, "version": version_str}
 
 @app.post("/api/agents/fetch-github")
 async def fetch_github(req: FetchGithubRequest):

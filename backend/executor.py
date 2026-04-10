@@ -13,10 +13,12 @@ AGENTS_DIR = os.path.join(os.path.dirname(__file__), "..", "agents")
 
 
 AGENT_MODULE_MAP = {
-    "summarizer-v1":     "summarizer",
-    "code-explainer-v1": "code_explainer",
-    "web-scraper-v1":    "web_scraper",
-    "email-drafter-v1":  "email_drafter",
+    "summarizer-v1":       "summarizer",
+    "code-explainer-v1":   "code_explainer",
+    "web-scraper-v1":      "web_scraper",
+    "email-drafter-v1":    "email_drafter",
+    "password-checker-v1": "password_checker",
+    "url-analyzer-v1":     "url_analyzer",
 }
 
 def _get_script(agent_id: str):
@@ -99,6 +101,7 @@ async def run_pipeline_stream(agent_ids: List[str], initial_input: str) -> Async
 
         log_execution(pipeline_id, agent_id, current_input, stdout, latency_ms, success, stderr)
         yield f"data: {json.dumps({'type': 'step_done', 'step': step, 'agent_id': agent_id, 'latency_ms': round(latency_ms)})}\n\n"
+        yield f"data: {json.dumps({'type': 'ping'})}\n\n"
         current_input = stdout
 
     yield f"data: {json.dumps({'type': 'pipeline_done', 'pipeline_id': pipeline_id})}\n\n"

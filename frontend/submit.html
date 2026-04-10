@@ -6,41 +6,45 @@
   <title>AgentForge — Submit Agent</title>
   <link rel="stylesheet" href="/static/style.css"/>
   <style>
-    .submit-layout { max-width: 860px; margin: 0 auto; padding: 48px 28px 80px; }
-    .schema-block { background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:12px;color:var(--text3);white-space:pre;overflow-x:auto;line-height:1.7; }
-    .tag-row { display:flex;flex-wrap:wrap;gap:6px;margin-top:8px; }
-    .tag-pill { font-family:var(--mono);font-size:11px;padding:3px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text2);cursor:pointer;transition:all 0.15s; }
-    .tag-pill:hover { border-color:var(--green3);color:var(--green); }
-    .tag-pill.selected { background:rgba(0,255,136,0.08);border-color:var(--green3);color:var(--green); }
-    .code-editor { width:100%;min-height:280px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:13px;color:var(--text);resize:vertical;outline:none;line-height:1.7;tab-size:4;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box; }
-    .code-editor:focus { border-color:var(--green3);box-shadow:var(--glow); }
-    .method-tabs { display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap; }
-    .method-tab { font-family:var(--mono);font-size:12px;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s; }
-    .method-tab.active { color:var(--green);border-color:var(--green3);background:rgba(0,255,136,0.05); }
-    .method-panel { display:none; }
-    .method-panel.active { display:block; }
-    .val-box { border-radius:var(--radius);padding:12px 16px;font-family:var(--mono);font-size:12px;margin-top:12px;display:none;white-space:pre-wrap;line-height:1.6; }
-    .val-box.success { background:rgba(0,255,136,0.05);border:1px solid var(--green3);color:var(--green); }
-    .val-box.error   { background:rgba(255,68,85,0.05);border:1px solid var(--red);color:var(--red); }
-    .val-box.info    { background:rgba(255,170,0,0.05);border:1px solid #aa6600;color:var(--amber); }
-    .success-state { display:none;text-align:center;padding:48px 20px; }
-    .success-icon { font-family:var(--mono);font-size:48px;color:var(--green);margin-bottom:16px; }
-    .success-title { font-family:var(--mono);font-size:18px;color:var(--text);margin-bottom:8px; }
-    .success-sub { font-size:14px;color:var(--text2);margin-bottom:24px; }
-    #submit-btn { transition:opacity 0.2s; }
-    #submit-btn.locked { opacity:0.4;cursor:not-allowed;border-color:var(--border)!important;color:var(--text3)!important;background:transparent!important; }
-    .publish-hint { font-family:var(--mono);font-size:11px;color:var(--amber);display:none;margin-top:6px; }
-    .publish-hint.visible { display:block; }
-    #validated-badge { display:none;font-family:var(--mono);font-size:11px;color:var(--green);padding:4px 10px;border:1px solid var(--green3);border-radius:var(--radius);background:rgba(0,255,136,0.06); }
-    #validated-badge.visible { display:inline-block; }
-    .upload-zone { border:2px dashed var(--border);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;margin-bottom:8px; }
-    .upload-zone:hover,.upload-zone.dragover { border-color:var(--green3);background:rgba(0,255,136,0.03); }
-    .upload-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
-    .upload-zone-text { font-family:var(--mono);font-size:12px;color:var(--text3); }
-    .upload-zone-text span { color:var(--green); }
-    .file-badge { display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;padding:6px 12px;background:rgba(0,255,136,0.06);border:1px solid var(--green3);border-radius:var(--radius);color:var(--green); }
-    .file-badge button { background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0;line-height:1; }
-    #model-validated-badge { display:none;font-family:var(--mono);font-size:11px;color:var(--green);padding:4px 10px;border:1px solid var(--green3);border-radius:var(--radius);background:rgba(0,255,136,0.06); }
+    .submit-layout{max-width:860px;margin:0 auto;padding:48px 28px 80px;}
+    .schema-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:12px;color:var(--text3);white-space:pre;overflow-x:auto;line-height:1.7;}
+    .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+    .tag-pill{font-family:var(--mono);font-size:11px;padding:3px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text2);cursor:pointer;transition:all 0.15s;}
+    .tag-pill:hover{border-color:var(--green3);color:var(--green);}
+    .tag-pill.selected{background:rgba(0,255,136,0.08);border-color:var(--green3);color:var(--green);}
+    .code-editor{width:100%;min-height:280px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-family:var(--mono);font-size:13px;color:var(--text);resize:vertical;outline:none;line-height:1.7;tab-size:4;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box;}
+    .code-editor:focus{border-color:var(--green3);box-shadow:var(--glow);}
+    .method-tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;}
+    .method-tab{font-family:var(--mono);font-size:12px;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s;}
+    .method-tab.active{color:var(--green);border-color:var(--green3);background:rgba(0,255,136,0.05);}
+    .method-panel{display:none;}
+    .method-panel.active{display:block;}
+    .val-box{border-radius:var(--radius);padding:12px 16px;font-family:var(--mono);font-size:12px;margin-top:12px;display:none;white-space:pre-wrap;line-height:1.6;}
+    .val-box.success{background:rgba(0,255,136,0.05);border:1px solid var(--green3);color:var(--green);}
+    .val-box.error{background:rgba(255,68,85,0.05);border:1px solid var(--red);color:var(--red);}
+    .val-box.info{background:rgba(255,170,0,0.05);border:1px solid #aa6600;color:var(--amber);}
+    .success-state{display:none;text-align:center;padding:48px 20px;}
+    .success-icon{font-family:var(--mono);font-size:48px;color:var(--green);margin-bottom:16px;}
+    .success-title{font-family:var(--mono);font-size:18px;color:var(--text);margin-bottom:8px;}
+    .success-sub{font-size:14px;color:var(--text2);margin-bottom:24px;}
+    #submit-btn{transition:opacity 0.2s;}
+    #submit-btn.locked{opacity:0.4;cursor:not-allowed;border-color:var(--border)!important;color:var(--text3)!important;background:transparent!important;}
+    .publish-hint{font-family:var(--mono);font-size:11px;color:var(--amber);display:none;margin-top:6px;}
+    .publish-hint.visible{display:block;}
+    #validated-badge{display:none;font-family:var(--mono);font-size:11px;color:var(--green);padding:4px 10px;border:1px solid var(--green3);border-radius:var(--radius);background:rgba(0,255,136,0.06);}
+    #validated-badge.visible{display:inline-block;}
+    .upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;margin-bottom:8px;}
+    .upload-zone:hover,.upload-zone.dragover{border-color:var(--green3);background:rgba(0,255,136,0.03);}
+    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+    .upload-zone-text{font-family:var(--mono);font-size:12px;color:var(--text3);}
+    .upload-zone-text span{color:var(--green);}
+    .file-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;padding:6px 12px;background:rgba(0,255,136,0.06);border:1px solid var(--green3);border-radius:var(--radius);color:var(--green);}
+    .file-badge button{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:0;line-height:1;}
+    #model-validated-badge{display:none;font-family:var(--mono);font-size:11px;color:var(--green);padding:4px 10px;border:1px solid var(--green3);border-radius:var(--radius);background:rgba(0,255,136,0.06);}
+    .section-divider{border:none;border-top:1px solid var(--border);margin:28px 0;}
+    .pricing-toggle{display:flex;gap:8px;}
+    .pricing-opt{font-family:var(--mono);font-size:12px;padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s;}
+    .pricing-opt.active{border-color:var(--green3);color:var(--green);background:rgba(0,255,136,0.05);}
   </style>
 </head>
 <body>
@@ -75,7 +79,6 @@
       <p style="color:var(--text2);font-size:13px;line-height:1.7;margin-bottom:12px;">
         Must read from <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">stdin</code> and write to
         <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">stdout</code>.
-        Runs in a sandbox — only saved if execution succeeds.
       </p>
       <textarea class="code-editor" id="agent-code" spellcheck="false" oninput="onCodeEdit()">#!/usr/bin/env python3
 import sys
@@ -100,12 +103,10 @@ if __name__ == "__main__":
       <div class="val-box" id="val-result"></div>
     </div>
 
-    <!-- GITHUB IMPORT -->
+    <!-- GITHUB -->
     <div class="method-panel" id="tab-github">
       <div class="section-title" style="margin-bottom:12px;">Import from GitHub</div>
-      <p style="color:var(--text2);font-size:13px;line-height:1.7;margin-bottom:12px;">
-        Paste a raw GitHub URL to an <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">agent.py</code>. We fetch it, sandbox-test it, then register it.
-      </p>
+      <p style="color:var(--text2);font-size:13px;line-height:1.7;margin-bottom:12px;">Paste a raw GitHub URL to an agent.py. We fetch it, test it, then register it.</p>
       <div style="display:flex;gap:10px;">
         <input class="form-input" id="github-url" placeholder="https://raw.githubusercontent.com/user/repo/main/agent.py" style="flex:1;"/>
         <button class="btn btn-secondary" onclick="fetchFromGithub()" id="github-btn">Fetch</button>
@@ -118,10 +119,8 @@ if __name__ == "__main__":
       <div class="section-title" style="margin-bottom:12px;">Upload Trained Model</div>
       <p style="color:var(--text2);font-size:13px;line-height:1.7;margin-bottom:16px;">
         Upload a trained <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">.pkl</code> or
-        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">.joblib</code> sklearn model.
-        AgentForge auto-generates the agent wrapper — no code needed.
+        <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:12px;">.joblib</code> sklearn model. AgentForge auto-generates the wrapper.
       </p>
-
       <div class="form-group">
         <label class="form-label">Model File * (.pkl / .joblib — max 50MB)</label>
         <div class="upload-zone" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'model')">
@@ -130,7 +129,6 @@ if __name__ == "__main__":
         </div>
         <div id="model-file-badge" style="display:none;"></div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Scaler File (optional)</label>
         <div class="upload-zone" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event,'scaler')">
@@ -139,41 +137,31 @@ if __name__ == "__main__":
         </div>
         <div id="scaler-file-badge" style="display:none;"></div>
       </div>
-
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="form-group">
           <label class="form-label">Number of Features *</label>
           <input class="form-input" id="model-n-features" type="number" min="1" max="10000" placeholder="e.g. 4" oninput="updateInputPreview()"/>
-          <div style="font-size:11px;color:var(--text3);margin-top:4px;">How many input values your model expects</div>
         </div>
         <div class="form-group">
           <label class="form-label">Model Task *</label>
-          <select class="form-select" id="model-task">
-            <option value="classification">Classification</option>
-            <option value="regression">Regression</option>
-          </select>
+          <select class="form-select" id="model-task"><option value="classification">Classification</option><option value="regression">Regression</option></select>
         </div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Feature Names (comma-separated, optional)</label>
         <input class="form-input" id="model-features" placeholder="e.g. sepal_length, sepal_width, petal_length, petal_width" oninput="updateInputPreview()"/>
       </div>
-
       <div class="form-group">
-        <label class="form-label">Class Labels (comma-separated, classification only)</label>
+        <label class="form-label">Class Labels (classification only)</label>
         <input class="form-input" id="model-labels" placeholder="e.g. setosa, versicolor, virginica"/>
       </div>
-
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:16px;">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Input Format (comma-separated numbers via stdin)</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;">Input Format (comma-separated via stdin)</div>
         <div style="font-family:var(--mono);font-size:12px;color:var(--green);" id="model-input-preview">0.0, 0.0, 0.0, 0.0</div>
       </div>
-
       <div class="form-group">
-        <label class="form-label">Test Input (optional — use real values for accurate validation)</label>
+        <label class="form-label">Test Input (use real values for accurate validation)</label>
         <input class="form-input" id="model-test-input" placeholder="e.g. 5.1, 3.5, 1.4, 0.2"/>
-        <div style="font-size:11px;color:var(--text3);margin-top:4px;">Comma-separated feature values. If empty, dummy values are used.</div>
       </div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <button class="btn btn-secondary" onclick="validateModel()" id="model-validate-btn">▶ Test Model</button>
@@ -182,7 +170,7 @@ if __name__ == "__main__":
       <div class="val-box" id="model-val-result"></div>
     </div>
 
-    <hr class="divider"/>
+    <hr class="section-divider"/>
     <div class="section-title" style="margin-bottom:20px;">Manifest</div>
 
     <div class="form-group">
@@ -196,7 +184,7 @@ if __name__ == "__main__":
     </div>
     <div class="form-group">
       <label class="form-label">Description *</label>
-      <textarea class="form-textarea" id="f-desc" style="height:72px;" placeholder="What does this agent do? What are the input features?"></textarea>
+      <textarea class="form-textarea" id="f-desc" style="height:72px;" placeholder="What does this agent do? Include input format details."></textarea>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
       <div class="form-group"><label class="form-label">Author</label><input class="form-input" id="f-author" placeholder="your name"/></div>
@@ -206,8 +194,7 @@ if __name__ == "__main__":
       <div class="form-group">
         <label class="form-label">Input Type</label>
         <select class="form-select" id="f-input-type">
-          <option value="text">text</option><option value="url">url</option>
-          <option value="code">code</option><option value="json">json</option>
+          <option value="text">text</option><option value="url">url</option><option value="code">code</option><option value="json">json</option>
         </select>
       </div>
       <div class="form-group">
@@ -217,6 +204,44 @@ if __name__ == "__main__":
         </select>
       </div>
     </div>
+
+    <!-- INPUT VALIDATION -->
+    <hr class="section-divider"/>
+    <div class="section-title" style="margin-bottom:16px;">Input Validation</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="form-group">
+        <label class="form-label">Max Input Length (chars)</label>
+        <input class="form-input" id="f-max-length" type="number" value="10000" min="1" max="1000000"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Format Hint (shown to users)</label>
+        <input class="form-input" id="f-format-hint" placeholder="e.g. comma-separated numbers"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Regex Pattern (optional — input must match)</label>
+      <input class="form-input" id="f-regex" placeholder="e.g. ^\d+(,\s*\d+)*$ for comma-separated numbers"/>
+    </div>
+
+    <!-- PRICING -->
+    <hr class="section-divider"/>
+    <div class="section-title" style="margin-bottom:16px;">Pricing</div>
+    <div class="form-group">
+      <label class="form-label">Pricing Model</label>
+      <div class="pricing-toggle">
+        <button class="pricing-opt active" id="pricing-free" onclick="setPricing('free')">🆓 Free</button>
+        <button class="pricing-opt" id="pricing-pay" onclick="setPricing('pay-per-use')">💰 Pay-per-use</button>
+        <button class="pricing-opt" id="pricing-premium" onclick="setPricing('premium')">⭐ Premium</button>
+      </div>
+    </div>
+    <div id="price-field" style="display:none;" class="form-group">
+      <label class="form-label">Price per Run (₹)</label>
+      <input class="form-input" id="f-price" type="number" min="0" step="0.5" value="2" style="max-width:200px;"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">Users will see a subscribe button instead of Run Agent.</div>
+    </div>
+
+    <!-- TAGS -->
+    <hr class="section-divider"/>
     <div class="form-group">
       <label class="form-label">Tags</label>
       <div class="tag-row">
@@ -267,173 +292,139 @@ if __name__ == "__main__":
 
 <div class="toast-container" id="toasts"></div>
 <script>
-let selectedTags = new Set();
-let codeValidated = false;
-let validatedOutput = '';
-let currentTab = 'editor';
-let modelFileData = null;
-let scalerFileData = null;
-let modelValidated = false;
+let selectedTags=new Set(),codeValidated=false,validatedOutput='',currentTab='editor';
+let modelFileData=null,scalerFileData=null,modelValidated=false;
+let selectedPricing='free';
 
-function switchTab(tab) {
-  currentTab = tab;
-  ['editor','github','model'].forEach(t => {
-    document.getElementById(`tab-btn-${t}`).classList.toggle('active', t === tab);
-    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+function switchTab(tab){
+  currentTab=tab;
+  ['editor','github','model'].forEach(t=>{
+    document.getElementById(`tab-btn-${t}`).classList.toggle('active',t===tab);
+    document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);
   });
 }
 
-function updatePublishBtn() {
-  const ok = codeValidated || modelValidated;
-  document.getElementById('submit-btn').classList.toggle('locked', !ok);
-  document.getElementById('validated-badge').classList.toggle('visible', codeValidated);
-  document.getElementById('model-validated-badge').style.display = modelValidated ? 'inline-block' : 'none';
+function updatePublishBtn(){
+  const ok=codeValidated||modelValidated;
+  document.getElementById('submit-btn').classList.toggle('locked',!ok);
+  document.getElementById('validated-badge').classList.toggle('visible',codeValidated);
+  document.getElementById('model-validated-badge').style.display=modelValidated?'inline-block':'none';
 }
 
-function onCodeEdit() {
-  if (codeValidated) { codeValidated = false; updatePublishBtn(); document.getElementById('val-result').style.display='none'; }
+function onCodeEdit(){if(codeValidated){codeValidated=false;updatePublishBtn();document.getElementById('val-result').style.display='none';}}
+
+function setPricing(model){
+  selectedPricing=model;
+  ['free','pay','premium'].forEach(p=>document.getElementById(`pricing-${p}`).classList.remove('active'));
+  document.getElementById(`pricing-${model==='pay-per-use'?'pay':model==='premium'?'premium':'free'}`).classList.add('active');
+  document.getElementById('price-field').style.display=model==='pay-per-use'?'block':'none';
+  updatePreview();
 }
 
-// ── File upload ────────────────────────────────────────────────────
-function handleFileSelect(e, type) { if(e.target.files[0]) processFile(e.target.files[0], type); }
-function handleDrop(e, type) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('dragover');
-  if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0], type);
-}
-function processFile(file, type) {
-  if (file.size > 50*1024*1024) { toast('File too large (max 50MB)','error'); return; }
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const b64 = ev.target.result.split(',')[1];
-    if (type==='model') { modelFileData=b64; modelValidated=false; updatePublishBtn(); }
-    else { scalerFileData=b64; }
-    const badge = document.getElementById(`${type}-file-badge`);
+// File upload
+function handleFileSelect(e,type){if(e.target.files[0])processFile(e.target.files[0],type);}
+function handleDrop(e,type){e.preventDefault();e.currentTarget.classList.remove('dragover');if(e.dataTransfer.files[0])processFile(e.dataTransfer.files[0],type);}
+function processFile(file,type){
+  if(file.size>50*1024*1024){toast('File too large (max 50MB)','error');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const b64=ev.target.result.split(',')[1];
+    if(type==='model'){modelFileData=b64;modelValidated=false;updatePublishBtn();}
+    else{scalerFileData=b64;}
+    const badge=document.getElementById(`${type}-file-badge`);
     badge.style.display='block';
     badge.innerHTML=`<div class="file-badge">📦 ${file.name} (${(file.size/1024).toFixed(1)}KB) <button onclick="clearFile('${type}')">×</button></div>`;
-    updateInputPreview();
-    toast(`${file.name} loaded ✓`,'success');
+    updateInputPreview();toast(`${file.name} loaded ✓`,'success');
   };
   reader.readAsDataURL(file);
 }
-function clearFile(type) {
-  if(type==='model'){modelFileData=null;modelValidated=false;updatePublishBtn();}
-  else{scalerFileData=null;}
-  document.getElementById(`${type}-file-badge`).style.display='none';
-  document.getElementById(`${type}-file`).value='';
-}
-function updateInputPreview() {
-  const n = parseInt(document.getElementById('model-n-features').value)||4;
-  const names = document.getElementById('model-features').value.split(',').map(s=>s.trim()).filter(Boolean);
-  const preview = Array.from({length:n},(_,i)=>names[i]?`${names[i]}: 0.0`:'0.0').join(', ');
-  document.getElementById('model-input-preview').textContent = preview.slice(0,100);
-}
+function clearFile(type){if(type==='model'){modelFileData=null;modelValidated=false;updatePublishBtn();}else{scalerFileData=null;}document.getElementById(`${type}-file-badge`).style.display='none';document.getElementById(`${type}-file`).value='';}
+function updateInputPreview(){const n=parseInt(document.getElementById('model-n-features').value)||4;const names=document.getElementById('model-features').value.split(',').map(s=>s.trim()).filter(Boolean);const preview=Array.from({length:n},(_,i)=>names[i]?`${names[i]}: 0.0`:'0.0').join(', ');document.getElementById('model-input-preview').textContent=preview.slice(0,100);}
 
-// ── Validate model ─────────────────────────────────────────────────
-async function validateModel() {
-  if (!modelFileData) { toast('Upload a model file first','error'); return; }
-  const n = parseInt(document.getElementById('model-n-features').value);
-  if (!n||n<1) { toast('Enter number of features','error'); return; }
-  const btn=document.getElementById('model-validate-btn');
-  const box=document.getElementById('model-val-result');
-  btn.disabled=true; btn.textContent='● Testing...';
-  box.style.display='block'; box.className='val-box info'; box.textContent='loading model and running test prediction...';
+async function validateModel(){
+  if(!modelFileData){toast('Upload a model file first','error');return;}
+  const n=parseInt(document.getElementById('model-n-features').value);
+  if(!n||n<1){toast('Enter number of features','error');return;}
+  const btn=document.getElementById('model-validate-btn'),box=document.getElementById('model-val-result');
+  btn.disabled=true;btn.textContent='● Testing...';
+  box.style.display='block';box.className='val-box info';box.textContent='loading model and running test prediction...';
   modelValidated=false;
-  try {
-    const r = await fetch('/api/agents/validate-model', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model_b64: modelFileData,
-        test_input: document.getElementById('model-test-input').value.trim() || null,
-        scaler_b64: scalerFileData||null,
-        n_features: n,
-        task: document.getElementById('model-task').value,
-        feature_names: document.getElementById('model-features').value.split(',').map(s=>s.trim()).filter(Boolean),
-        class_labels: document.getElementById('model-labels').value.split(',').map(s=>s.trim()).filter(Boolean),
-      })
-    });
-    const d = await r.json();
-    if (d.success) {
-      box.className='val-box success';
-      box.textContent=`✓ Model loaded & ran successfully (${d.latency_ms}ms)\n\nTest prediction:\n${d.output}`;
-      modelValidated=true; validatedOutput=d.output;
-      updatePublishBtn(); toast('Model validated ✓','success');
-    } else {
-      box.className='val-box error'; box.textContent=`✗ Model failed\n\n${d.error}`;
-      toast('Validation failed','error');
-    }
-  } catch(e){box.className='val-box error';box.textContent=`✗ ${e.message}`;}
+  try{
+    const r=await fetch('/api/agents/validate-model',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model_b64:modelFileData,scaler_b64:scalerFileData||null,n_features:n,task:document.getElementById('model-task').value,
+        feature_names:document.getElementById('model-features').value.split(',').map(s=>s.trim()).filter(Boolean),
+        class_labels:document.getElementById('model-labels').value.split(',').map(s=>s.trim()).filter(Boolean),
+        test_input:document.getElementById('model-test-input').value.trim()||null})});
+    const d=await r.json();
+    if(d.success){box.className='val-box success';box.textContent=`✓ Model loaded & ran (${d.latency_ms}ms)\n\nTest prediction:\n${d.output}`;modelValidated=true;validatedOutput=d.output;updatePublishBtn();toast('Model validated ✓','success');}
+    else{box.className='val-box error';box.textContent=`✗ Model failed\n\n${d.error}`;toast('Validation failed','error');}
+  }catch(e){box.className='val-box error';box.textContent=`✗ ${e.message}`;}
   finally{btn.disabled=false;btn.textContent='▶ Test Model';}
 }
 
-// ── Validate code ──────────────────────────────────────────────────
-async function validateCode() {
+async function validateCode(){
   const code=document.getElementById('agent-code').value.trim();
   if(!code){toast('Write some code first','error');return;}
-  const btn=document.getElementById('validate-btn');
-  const box=document.getElementById('val-result');
+  const btn=document.getElementById('validate-btn'),box=document.getElementById('val-result');
   btn.disabled=true;btn.textContent='● Running...';
   box.style.display='block';box.className='val-box info';box.textContent='sandboxing agent...';
   codeValidated=false;updatePublishBtn();
-  try {
+  try{
     const r=await fetch('/api/agents/validate-code',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({code,test_input:'Hello world. The quick brown fox jumps over the lazy dog.'})});
     const d=await r.json();
-    if(d.success){
-      box.className='val-box success';
-      box.textContent=`✓ Agent ran successfully (${d.latency_ms}ms)\n\nOutput:\n${d.output.slice(0,400)}`;
-      codeValidated=true;validatedOutput=d.output;updatePublishBtn();toast('Code validated ✓','success');
-    } else {
-      box.className='val-box error';box.textContent=`✗ Agent failed\n\n${d.error}`;toast('Validation failed','error');
-    }
-  } catch(e){box.className='val-box error';box.textContent=`✗ ${e.message}`;}
+    if(d.success){box.className='val-box success';box.textContent=`✓ Agent ran (${d.latency_ms}ms)\n\nOutput:\n${d.output.slice(0,400)}`;codeValidated=true;validatedOutput=d.output;updatePublishBtn();toast('Code validated ✓','success');}
+    else{box.className='val-box error';box.textContent=`✗ Agent failed\n\n${d.error}`;toast('Validation failed','error');}
+  }catch(e){box.className='val-box error';box.textContent=`✗ ${e.message}`;}
   finally{btn.disabled=false;btn.textContent='▶ Test Run';}
 }
 
-// ── GitHub ─────────────────────────────────────────────────────────
-async function fetchFromGithub() {
+async function fetchFromGithub(){
   const url=document.getElementById('github-url').value.trim();
   if(!url){toast('Enter a GitHub raw URL','error');return;}
   if(!url.includes('raw.githubusercontent.com')){toast('Must be a raw.githubusercontent.com URL','error');return;}
-  const btn=document.getElementById('github-btn');
-  const box=document.getElementById('github-result');
+  const btn=document.getElementById('github-btn'),box=document.getElementById('github-result');
   btn.disabled=true;btn.textContent='Fetching...';
   box.style.display='block';box.className='val-box info';box.textContent='fetching from GitHub...';
-  try {
+  try{
     const r=await fetch('/api/agents/fetch-github',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
     const d=await r.json();
-    if(d.success){
-      document.getElementById('agent-code').value=d.code;
-      codeValidated=false;updatePublishBtn();switchTab('editor');
-      box.className='val-box success';box.textContent=`✓ Fetched ${d.lines} lines. Click Test Run to validate.`;
-      toast('Imported from GitHub ✓','success');
-    } else{box.className='val-box error';box.textContent=`✗ ${d.error}`;}
-  } catch(e){box.className='val-box error';box.textContent=`✗ ${e.message}`;}
+    if(d.success){document.getElementById('agent-code').value=d.code;codeValidated=false;updatePublishBtn();switchTab('editor');box.className='val-box success';box.textContent=`✓ Fetched ${d.lines} lines. Click Test Run to validate.`;toast('Imported ✓','success');}
+    else{box.className='val-box error';box.textContent=`✗ ${d.error}`;}
+  }catch(e){box.className='val-box error';box.textContent=`✗ ${e.message}`;}
   finally{btn.disabled=false;btn.textContent='Fetch';}
 }
 
-// ── Tags + manifest ────────────────────────────────────────────────
-function toggleTag(el){
-  const tag=el.textContent;
-  if(selectedTags.has(tag)){selectedTags.delete(tag);el.classList.remove('selected');}
-  else{selectedTags.add(tag);el.classList.add('selected');}
-  updatePreview();
-}
+function toggleTag(el){const tag=el.textContent;if(selectedTags.has(tag)){selectedTags.delete(tag);el.classList.remove('selected');}else{selectedTags.add(tag);el.classList.add('selected');}updatePreview();}
+
 function getManifest(){
   const name=document.getElementById('f-name').value.trim();
   const id=document.getElementById('f-id').value.trim()||(name?name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'')+'-v1':'');
   const customTags=document.getElementById('f-tags-custom').value.split(',').map(t=>t.trim()).filter(Boolean);
-  return{id:id||undefined,name:name||'Unnamed Agent',description:document.getElementById('f-desc').value.trim(),
-    author:document.getElementById('f-author').value.trim()||'anonymous',version:document.getElementById('f-version').value.trim()||'1.0',
-    tags:[...selectedTags,...customTags],input:{type:document.getElementById('f-input-type').value},
-    output:{type:document.getElementById('f-output-type').value},entry:'agent.py'};
+  const price=selectedPricing==='pay-per-use'?parseFloat(document.getElementById('f-price').value||0):0;
+  return{
+    id:id||undefined,name:name||'Unnamed Agent',
+    description:document.getElementById('f-desc').value.trim(),
+    author:document.getElementById('f-author').value.trim()||'anonymous',
+    version:document.getElementById('f-version').value.trim()||'1.0',
+    tags:[...selectedTags,...customTags],
+    input:{type:document.getElementById('f-input-type').value},
+    output:{type:document.getElementById('f-output-type').value},
+    entry:'agent.py',
+    pricing_model:selectedPricing,
+    price_per_run:price,
+    input_max_length:parseInt(document.getElementById('f-max-length').value)||10000,
+    input_regex:document.getElementById('f-regex').value.trim(),
+    input_format_hint:document.getElementById('f-format-hint').value.trim(),
+    a2a_compatible:1,
+  };
 }
+
 function updatePreview(){document.getElementById('manifest-preview').textContent=JSON.stringify(getManifest(),null,2);}
-['f-name','f-id','f-desc','f-author','f-version','f-tags-custom'].forEach(id=>document.getElementById(id).addEventListener('input',updatePreview));
+['f-name','f-id','f-desc','f-author','f-version','f-tags-custom','f-max-length','f-regex','f-format-hint','f-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',updatePreview);});
 document.getElementById('f-input-type').addEventListener('change',updatePreview);
 document.getElementById('f-output-type').addEventListener('change',updatePreview);
 
-// ── Submit ─────────────────────────────────────────────────────────
 async function submitAgent(){
   if(!codeValidated&&!modelValidated){document.getElementById('publish-hint').classList.add('visible');toast('Run Test first','error');return;}
   const manifest=getManifest();
@@ -450,7 +441,7 @@ async function submitAgent(){
         task:document.getElementById('model-task').value,
         feature_names:document.getElementById('model-features').value.split(',').map(s=>s.trim()).filter(Boolean),
         class_labels:document.getElementById('model-labels').value.split(',').map(s=>s.trim()).filter(Boolean)});
-    } else {
+    }else{
       endpoint='/api/agents/submit-with-code';
       body=JSON.stringify({manifest,code:document.getElementById('agent-code').value.trim()});
     }
@@ -459,26 +450,29 @@ async function submitAgent(){
     if(d.success){
       document.getElementById('form-view').style.display='none';
       document.getElementById('success-view').style.display='block';
-      document.getElementById('success-msg').textContent=`"${manifest.name}" is live. ID: ${d.agent?.id}`;
+      document.getElementById('success-msg').textContent=`"${manifest.name}" is live. ID: ${d.agent?.id}${d.version?' · Version: '+d.version:''}`;
       document.getElementById('success-output').textContent=validatedOutput.slice(0,400);
-    } else{toast(d.detail||'Submission failed','error');}
-  } catch(e){toast(`Error: ${e.message}`,'error');}
+    }else toast(d.detail||'Submission failed','error');
+  }catch(e){toast(`Error: ${e.message}`,'error');}
   finally{btn.disabled=false;btn.textContent='↑ Publish Agent';status.textContent='';}
 }
 
 function resetForm(){
   document.getElementById('form-view').style.display='block';
   document.getElementById('success-view').style.display='none';
-  ['f-name','f-id','f-desc','f-author','f-tags-custom'].forEach(id=>document.getElementById(id).value='');
+  ['f-name','f-id','f-desc','f-author','f-tags-custom','f-regex','f-format-hint'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-version').value='1.0';
+  document.getElementById('f-max-length').value='10000';
   document.getElementById('val-result').style.display='none';
   document.getElementById('publish-hint').classList.remove('visible');
   selectedTags.clear();
   document.querySelectorAll('.tag-pill.selected').forEach(el=>el.classList.remove('selected'));
   codeValidated=false;modelValidated=false;modelFileData=null;scalerFileData=null;
-  updatePublishBtn();updatePreview();
+  setPricing('free');updatePublishBtn();updatePreview();
 }
+
 function toast(msg,type=''){const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),3000);}
+
 updatePublishBtn();updatePreview();
 </script>
 </body>
